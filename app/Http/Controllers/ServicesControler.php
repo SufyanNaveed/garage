@@ -38,7 +38,7 @@ use App\Http\Requests\StoreServiceSecondStepAddFormRequest;
 
 class ServicesControler extends Controller
 {
-	//get tables and compact 
+	//get tables and compact
 	public function __construct()
     {
         $this->middleware('auth');
@@ -46,7 +46,7 @@ class ServicesControler extends Controller
 
     //service list
     public function servicelist()
-    {		
+    {
 		$month = date('m');
 		$year = date('Y');
 		$available = "";
@@ -66,16 +66,16 @@ class ServicesControler extends Controller
 			$available = json_encode($date);
 		}
 
-		//$ser_id_jobcard_details = DB::table('tbl_jobcard_details')->get()->toArray();	
+		//$ser_id_jobcard_details = DB::table('tbl_jobcard_details')->get()->toArray();
 		$ser_id_jobcard_details = JobcardDetail::get();
 		foreach($ser_id_jobcard_details as $ser_id){
 		  $servi_id = $ser_id->service_id;
 		}
-		
+
 		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
 
-		if (!isAdmin(Auth::User()->role_id)) 
+		if (!isAdmin(Auth::User()->role_id))
 		{
 			if (getUsersRole(Auth::user()->role_id) == 'Customer')
 			{
@@ -95,21 +95,21 @@ class ServicesControler extends Controller
 			$service = Service::where([['job_no','like','J%'],['soft_delete','=',0],['is_quotation', '=', 0], ['branch_id',$adminCurrentBranch->branch_id]])->orderBy('id','DESC')->get();
 		}
 
-		return view('/service/list',compact('service','available','current_month','servi_id'));	  
+		return view('/service/list',compact('service','available','current_month','servi_id'));
     }
 
 
 	//service add form
 	public function index()
-	{  
+	{
 		//Get last Jobcard data
 		$last_order = DB::table('tbl_services')->latest()->where('sales_id', '=', null)->get()->first();
-		
+
 		if(!empty($last_order)){
-			
+
 			$last_full_job_number = $last_order->job_no;
 			$last_job_number_digit = substr($last_full_job_number, 1);
-			$new_number = "J". str_pad($last_job_number_digit + 1, 6, 0, STR_PAD_LEFT); 
+			$new_number = "J". str_pad($last_job_number_digit + 1, 6, 0, STR_PAD_LEFT);
 		}
 		else{
 			$new_number = 'J000001';
@@ -118,12 +118,12 @@ class ServicesControler extends Controller
        	//$characters = '0123456789';
        	//$code =  'J'.''.substr(str_shuffle($characters),0,6);
 		$code = $new_number;
-					   
+
 	   	//Customer add
 	   	$customer=DB::table('users')->where([['role','Customer'],['soft_delete',0]])->get()->toArray();
 	   	$country = DB::table('tbl_countries')->get()->toArray();
 	   	$onlycustomer = DB::table('users')->where([['role','=','Customer'],['id','=',Auth::User()->id]])->first();
-		
+
 		//vehicle add
 		$vehical_type = DB::table('tbl_vehicle_types')->where('soft_delete','=',0)->get()->toArray();
 	    $vehical_brand = DB::table('tbl_vehicle_brands')->where('soft_delete','=',0)->get()->toArray();
@@ -137,7 +137,7 @@ class ServicesControler extends Controller
 		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
 		if (isAdmin(Auth::User()->role_id)){
-			
+
 			$branchDatas = Branch::where('id', $adminCurrentBranch->branch_id)->get();
 			$employee = DB::table('users')->where([['role','employee'],['soft_delete',0], ['branch_id',$adminCurrentBranch->branch_id]])->get()->toArray();
 		}
@@ -150,13 +150,13 @@ class ServicesControler extends Controller
 			$employee = DB::table('users')->where([['role','employee'],['soft_delete',0], ['branch_id',$currentUser->branch_id]])->get()->toArray();
 		}
 
-	   	return view('service.add',compact('employee','customer','code','country','onlycustomer','vehical_brand','vehical_type','fuel_type','color','model_name','tbl_custom_fields', 'branchDatas'));   
+	   	return view('service.add',compact('employee','customer','code','country','onlycustomer','vehical_brand','vehical_type','fuel_type','color','model_name','tbl_custom_fields', 'branchDatas'));
 	}
-	
+
 
 	//customer add
 	public function customeradd(Request $request)
-	{	
+	{
 		$firstname = $request->firstname;
 		$lastname = $request->lastname;
 		$displayname = $request->displayname;
@@ -181,7 +181,7 @@ class ServicesControler extends Controller
 
 		//Get user role id from Role table
 		$getRoleId = Role::where('role_name', '=', 'Customer')->first();
-		
+
 		$customer = new User;
 		$customer->name = $firstname;
 		$customer->lastname = $lastname;
@@ -197,7 +197,7 @@ class ServicesControler extends Controller
 		$customer->state_id = $state;
 		$customer->city_id = $city;
 		$customer->company_name = $company_name;
-		
+
 		$images = $request->image;
 		if(!empty($images))
 		{
@@ -210,7 +210,7 @@ class ServicesControler extends Controller
 		else{
 			$customer->image = 'avtar.png';
 		}
-		
+
 		$customer->role = "Customer";
 		$customer->role_id = $getRoleId->id; /*Store Role table User Role Id*/
 		$customer->language = "en";
@@ -218,7 +218,7 @@ class ServicesControler extends Controller
 		$customer->save();
 
 		/*For data store inside Role_user table*/
-		if ( $customer->save() ) 
+		if ( $customer->save() )
 		{
 			$currentUserId = $customer->id;
 
@@ -234,8 +234,8 @@ class ServicesControler extends Controller
 
 		return response()->json(['customerId' => $customer->id, 'customer_fullname' => $customer_fullname]);
 	}
-	
-	//add vehicle 
+
+	//add vehicle
 	public function vehicleadd(Request $request)
 	{
 		//dd($request->all());
@@ -268,9 +268,9 @@ class ServicesControler extends Controller
 			}
 			else{
 				$dom = date('Y-m-d',strtotime($domm));
-			}			
+			}
 		}
-     
+
 		$vehical = new Vehicle;
 		$vehical->vehicletype_id = $vehical_type;
 		$vehical->chassisno = $chasicno;
@@ -319,36 +319,38 @@ class ServicesControler extends Controller
 			$vehicals = DB::table('tbl_vehicles')->where('id','=',$vehi_id)->first();
 			$reg = $vehicals->registration_no;
 		}
-		return $reg;		
+		return $reg;
 	}
-	
+
 	//get vehicle name
 	public function get_vehicle_name(Request $request)
 	{
 		//$cus_id = Input::get('cus_id');
 		$cus_id = $request->cus_id;
-		$vehicals = DB::table('tbl_services')->where('customer_id','=',$cus_id)->groupBy('vehicle_id')->get()->toArray();
-		
+		//$vehicals = DB::table('tbl_services')->where('customer_id','=',$cus_id)->groupBy('vehicle_id')->get()->toArray();
+		$vehicals = DB::table('tbl_vehicles')->where('customer_id','=',$cus_id)->groupBy('id')->get()->toArray();
+
 		// $vehicals = DB::SELECT("SELECT  tbl_sales.vehicle_id,tbl_services.vehicle_id FROM tbl_services LEFT JOIN tbl_sales ON tbl_sales.customer_id = tbl_services.customer_id where tbl_services.customer_id = 35 OR tbl_sales.customer_id=35;");
 		// var_dump($vehicals);
 		// exit;
 		?>
 		<?php foreach($vehicals as $vehical) { ?>
-			<option value="<?php echo $vehical->vehicle_id;?>" class="modelnms"><?php echo getVehicleName($vehical->vehicle_id);?></option>
+			<!-- <option value="<?php //echo $vehical->vehicle_id;?>" class="modelnms"><?php //echo getVehicleName($vehical->vehicle_id);?></option> -->
+			<option value="<?php echo $vehical->id;?>" class="modelnms"><?php echo $vehical->modelname;?></option>
 		<?php } ?>
-		<?php 
-		
+		<?php
+
 	}
-	
+
 	//add_jobcard store
 	public function add_jobcard(Request $request)
-	{	
+	{
 		$job_no = $request->job_no;
 		$service_id = $request->service_id;
 		$cus_id = $request->cust_id;
 		$vehi_id = $request->vehi_id;
-		$kms = $request->kms; 
-		$coupan_no = $request->coupan_no;				
+		$kms = $request->kms;
+		$coupan_no = $request->coupan_no;
 		$product = $request->product;
 		$sub_product = $request->sub_product;
 		$comment = $request->comment;
@@ -368,21 +370,21 @@ class ServicesControler extends Controller
 
 		if(!empty($product))
 		{
-			foreach($product as $key => $value){			
-				$category = $product[$key];	
-				$sub = $sub_product[$key];	
-				$comm = $comment[$key];	
-				$obs_au_id = $obs_auto_id[$key];	
-				
+			foreach($product as $key => $value){
+				$category = $product[$key];
+				$sub = $sub_product[$key];
+				$comm = $comment[$key];
+				$obs_au_id = $obs_auto_id[$key];
+
 				$tbl_service_pros = new tbl_service_pros;
-				$tbl_service_pros->service_id = $service_id;	
+				$tbl_service_pros->service_id = $service_id;
 				$tbl_service_pros->category = $category;
 				$tbl_service_pros->obs_point = $sub;
 				$tbl_service_pros->type = 0;
 				$tbl_service_pros->chargeable = 1;
 				$tbl_service_pros->category_comments = $comm;
 				$tbl_service_pros->tbl_service_observation_points_id = $obs_au_id;
-				$tbl_service_pros->save();				
+				$tbl_service_pros->save();
 			}
 		}
 
@@ -395,11 +397,11 @@ class ServicesControler extends Controller
 		$tbl_jobcard_details->out_date = $out_dat;
 		$tbl_jobcard_details->kms_run = $kms;
 
-		if(!empty($coupan_no)){	
+		if(!empty($coupan_no)){
 			$tbl_jobcard_details->coupan_no = $coupan_no;
 		}
 
-		$tbl_jobcard_details->save(); 
+		$tbl_jobcard_details->save();
 
 		/*Inspection id, inspection details and answer stored in Json format in 'mot_vehicle_inspection' table*/
 		$mot_main_module_status_checked = DB::table('tbl_services')->where('id', '=', $service_id)->first();
@@ -407,7 +409,7 @@ class ServicesControler extends Controller
 
 		$inspection_data = array();
 
-		if ($mot_main_module_status == 1) 
+		if ($mot_main_module_status == 1)
 		{
 			$inspection_data = $request->inspection;
 			$data_for_db = json_encode($inspection_data);
@@ -415,7 +417,7 @@ class ServicesControler extends Controller
 			$mot_vehicle_inspection_data_store = DB::table('mot_vehicle_inspection')->insert($fill_mot_vehicle_inspection);
 			$get_vehicle_inspection_id = DB::table('mot_vehicle_inspection')->latest('id')->first();
 			$get_vehicle_current_id = $get_vehicle_inspection_id->id;
-			
+
 			if ( in_array('x', $inspection_data) || in_array('r', $inspection_data) ) {
 				$mot_test_status = 'fail';
 			}
@@ -434,8 +436,8 @@ class ServicesControler extends Controller
 		else {
 			//echo "You have not checked MoT Module";
 		}
-				
-		//email format		
+
+		//email format
 		$user = DB::table('users')->where('id','=',$cus_id)->first();
 		$email = $user->email;
 		$firstname = $user->name;
@@ -449,16 +451,16 @@ class ServicesControler extends Controller
 			if($tbl_jobcard_details->save())
 			{
 				$emailformat = DB::table('tbl_mail_notifications')->where('notification_for','=','successful_jobcard')->first();
-				$mail_format = $emailformat->notification_text;		
-				$mail_subjects = $emailformat->subject;		
+				$mail_format = $emailformat->notification_text;
+				$mail_subjects = $emailformat->subject;
 				$mail_send_from = $emailformat->send_from;
 				$search1 = array('{ jobcard_number }');
 				$replace1 = array($job_no);
 				$mail_sub = str_replace($search1, $replace1, $mail_subjects);
-				
+
 				$search = array('{ system_name }','{ Customer_name }', '{ jobcard_number }', '{ service_date }', '{ detail }');
 				$replace = array($systemname, $firstname, $job_no, $in_dat,$details);
-				
+
 				$email_content = str_replace($search, $replace, $mail_format);
 				$actual_link = $_SERVER['HTTP_HOST'];
 				$startip = '0.0.0.0';
@@ -467,12 +469,12 @@ class ServicesControler extends Controller
 				if(($actual_link == 'localhost' || $actual_link == 'localhost:8080') || ($actual_link >= $startip && $actual_link <= $endip ))
 				{
 					//local format email
-				
+
 					$data = array(
 					'email'=>$email,
 					'mail_sub1' => $mail_sub,
 					'email_content1' => $email_content,
-					'emailsend' =>$mail_send_from, 
+					'emailsend' =>$mail_send_from,
 					);
 					$data1 = Mail::send('customer.customermail',$data, function ($message) use ($data){
 
@@ -482,18 +484,18 @@ class ServicesControler extends Controller
 						});
 				}
 				else{
-					//live format email					
+					//live format email
 					$headers = 'Content-type: text/plain; charset=iso-8859-1' . "\r\n";
 					$headers .= 'From:'. $mail_send_from . "\r\n";
-				
+
 					$data = mail($email,$mail_sub,$email_content,$headers);
-				}				
-			}			
+				}
+			}
 		}
 		return redirect('jobcard/list')->with('message','Successfully Submitted');
 	}
-	
-	
+
+
 	//jobcard store
 	public function store(Request $request)
     {
@@ -520,26 +522,26 @@ class ServicesControler extends Controller
     		$mot_test_status = 0;
     	}
 
-    	$color = null;	 
-		/*$this->validate($request, [  
+    	$color = null;
+		/*$this->validate($request, [
          	'charge' => 'nullable|numeric',
 	    ]);*/
-	  
+
 	  	if(getDateFormat() == 'm-d-Y'){
 			$date = date('Y-m-d H:i:s',strtotime(str_replace('-','/', $date)));
 	  	}
 	  	else{
 		 	$date = date('Y-m-d H:i:s',strtotime($date));
-	  	}	  	 		       	
-	   	
+	  	}
+
 	   	if($ser_type == 'free'){
-		 	$charge = "0";  
+		 	$charge = "0";
 	   	}
 
 	   	if($ser_type == 'paid'){
 			$charge = $request->charge;
 	  	}
-	  
+
       	$services = new Service;
       	$services->job_no = $job;
       	$services->vehicle_id = $vehicalname;
@@ -555,7 +557,7 @@ class ServicesControler extends Controller
       	$services->mot_status = $mot_test_status;
       	$services->branch_id = $request->branch;
 
-      	//custom field save	
+      	//custom field save
       	$custom = $request->custom;
 		$custom_fileld_value = array();
 		$custom_fileld_value_jason_array = array();
@@ -568,20 +570,20 @@ class ServicesControler extends Controller
 					$custom_fileld_value[] = array("id" => "$key", "value" => "$add_one_in");
 				}
 				else{
-					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");	
-				}				
-			}	
-		   
-			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value); 
+					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");
+				}
+			}
+
+			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value);
 
 			foreach($custom_fileld_value_jason_array as $key1 => $val1)
 			{
 				$serviceData = $val1;
-			}	
+			}
 			$services->custom_field = $serviceData;
 		}
-      	$services->save();   
-	  
+      	$services->save();
+
 
 	  	//get current service id for washbay data
       	$get_service_id = DB::table('tbl_services')->where('job_no', '=', $job)->pluck('id')->first();
@@ -589,7 +591,7 @@ class ServicesControler extends Controller
       	$washbay_status = $request->washbay;
 
       	/*Checking for Washbay status, if washbay status on then data store inside washbay table*/
-      	if ($washbay_status == 'on') 
+      	if ($washbay_status == 'on')
       	{
       		$washbay_charge = $request->washBayCharge;
 
@@ -609,44 +611,44 @@ class ServicesControler extends Controller
       	if ($washbay_price == null) {
       		$washbay_price = null;
       	}
-	    
-      	$service_data = DB::table('tbl_services')->orderBy('id','DESC')->first();     
+
+      	$service_data = DB::table('tbl_services')->orderBy('id','DESC')->first();
 	  	$veh_id = $service_data->vehicle_id;
 	  	$ser_id = $service_data->id;
 	  	$cus_id = $service_data->customer_id;
-	  	  
+
 	 	$job_card_data = DB::table('tbl_jobcard_details')->where([['customer_id','=',$cus_id],['vehicle_id','=',$veh_id]])->get()->toArray();
 	 	if(!empty($job_card_data))
 	 	{
 			foreach ($job_card_data as $job_card_datas) {
 				$counpan_no[]= $job_card_datas->coupan_no;
 	 		}
-		
+
 			$free_coupan = DB::table('tbl_services')->where([['customer_id','=',$Customername], ['service_type','=','free'], ['vehicle_id','=',$vehicalname],['job_no','like','C%']])->whereNotIn('job_no',$counpan_no)->get()->toArray();
 	 	}
 	 	else
 	 	{
 		  	$free_coupan = DB::table('tbl_services')->where([['customer_id','=',$Customername], ['service_type','=','free'], ['vehicle_id','=',$vehicalname], ['job_no','like','C%']])->get()->toArray();
 	 	}
- 	
+
 	  	$sale_date = DB::table('tbl_sales')->where('vehicle_id','=',$veh_id)->first();
 	  	if(!empty( $sale_date))
 	  	{
 		  	$color_id = $sale_date->color_id;
 		  	$color = DB::table('tbl_colors')->where('id','=',$color_id)->first();
 	  	}
-	  
+
 	  	$vehical = DB::table('tbl_vehicles')->where('id','=',$veh_id)->first();
-	  
-	  	//$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where('vehicle_id','=',$veh_id)->orWhere('vehicle_id','=',0)->get()->toArray();	  	
+
+	  	//$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where('vehicle_id','=',$veh_id)->orWhere('vehicle_id','=',0)->get()->toArray();
 
 	  	$obs_point = DB::table('tbl_service_observation_points')->where([['services_id','=',$ser_id],['review','=',1]])->get()->toArray();
-	  
+
 	  	$sale_regi = DB::table('tbl_sales')->where('vehicle_id','=',$vehicalname)->first();
-	  
+
 	  	if(!empty($sale_regi))
-	  	{	
-		  	// $regi_no = $sale_regi->registration_no; 		
+	  	{
+		  	// $regi_no = $sale_regi->registration_no;
 			DB::update("update tbl_sales set registration_no = '$reg_no' where vehicle_id = $vehicalname");
 		}
 	  	else{
@@ -654,7 +656,7 @@ class ServicesControler extends Controller
 		}
 
 	  	$logo = DB::table('tbl_settings')->first();
-	  	$inspection_points_library_data = DB::table('inspection_points_library')->get();	  	
+	  	$inspection_points_library_data = DB::table('inspection_points_library')->get();
 
 	  	$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
@@ -662,7 +664,7 @@ class ServicesControler extends Controller
 		if (isAdmin(Auth::User()->role_id)){
 			$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where([['vehicle_id','=',$veh_id],['soft_delete','=',0]])->orWhere('vehicle_id','=',0)->where('branch_id','=',$adminCurrentBranch->branch_id)->get()->toArray();
 		}
-		elseif (getUsersRole(Auth::user()->role_id) == 'Customer') 
+		elseif (getUsersRole(Auth::user()->role_id) == 'Customer')
 		{
 			$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where([['vehicle_id','=',$veh_id],['soft_delete','=',0]])->orWhere('vehicle_id','=',0)->get()->toArray();
 		}
@@ -672,42 +674,42 @@ class ServicesControler extends Controller
 		}
 
 
-	  	return view('/service/jobcard_form',compact('service_data','vehical','tbl_checkout_categories','sale_date','color','obs_point','free_coupan','logo','inspection_points_library_data', 'washbay_price'));      
+	  	return view('/service/jobcard_form',compact('service_data','vehical','tbl_checkout_categories','sale_date','color','obs_point','free_coupan','logo','inspection_points_library_data', 'washbay_price'));
     }
-	
+
 	//select checkpoints
 	public function select_checkpt(Request $request)
 	{
-		//$value = Input::get('value');		
+		//$value = Input::get('value');
 		//$id = Input::get('id');
 		//$service_id = Input::get('service_id');
 		$value = $request->value;
 		$id = $request->id;
 		$service_id = $request->service_id;
-		
+
 		 $datas = DB::table('tbl_service_observation_points')->where([['services_id','=',$service_id],['observation_points_id','=',$id]])->first();
-		 
+
 			if(!empty($datas))
 			{
-				$review = $datas->review;				
+				$review = $datas->review;
 				if($review == 1)
 				{
 					DB::update("update tbl_service_observation_points set review = 0 where services_id='$service_id' and observation_points_id='$id'");
 				}
 				else{
 					DB::update("update tbl_service_observation_points set review = 1 where services_id='$service_id' and observation_points_id='$id'");
-				}		
+				}
 			}
 			else
-			{				
+			{
 				$data = new tbl_service_observation_points;
 				$data->services_id = $service_id;
 				$data->observation_points_id = $id;
 				$data->review = $value;
-				$data->save();	
+				$data->save();
 			}
 	}
-	
+
 	//get obs. points
 	public function Get_Observation_Pts(Request $request)
 	{
@@ -723,7 +725,7 @@ class ServicesControler extends Controller
 		$html = view('service.observationpoin')->with(compact('s_id','product','data'))->render();
 		return response()->json(['success' => true, 'html' => $html]);
 	}
-		
+
 
 	//service delete
 	public function destory($id)
@@ -738,7 +740,7 @@ class ServicesControler extends Controller
 			//No need to delete Payment, Invoice, Income_history and Income related record, when delete service
 			//$tbl_payment_records = DB::table('tbl_payment_records')->where('invoices_id','=',$in_id)->delete();
 			//$tbl_payment_records = DB::table('tbl_payment_records')->where('invoices_id','=',$in_id)->update(['soft_delete' => 1]);
-			
+
 			$tbl_invoices = DB::table('tbl_invoices')->where('id','=',$in_id)->first();
 			$invoice_no = $tbl_invoices->invoice_number;
 			$incomes_id = DB::table('tbl_incomes')->where('invoice_number','=',$invoice_no)->first();
@@ -752,7 +754,7 @@ class ServicesControler extends Controller
 				//$tbl_incomes = DB::table('tbl_incomes')->where('invoice_number','=',$invoice_no)->delete();
 				//$tbl_incomes = DB::table('tbl_incomes')->where('invoice_number','=',$invoice_no)->update(['soft_delete' => 1]);
 			}
-			
+
 		}
 
 		if(!empty($service1))
@@ -769,26 +771,26 @@ class ServicesControler extends Controller
 		$tbl_jobcard_details = DB::table('tbl_jobcard_details')->where('service_id','=',$id)->update(['soft_delete' => 1]);
 		$tbl_service_pros = DB::table('tbl_service_pros')->where('service_id','=',$id)->update(['soft_delete' => 1]);
 		$tbl_services = DB::table('tbl_services')->where('id','=',$id)->update(['soft_delete' => 1]);
-		
-		//$tbl_invoices = DB::table('tbl_invoices')->where('sales_service_id','=',$id)->update(['soft_delete' => 1]);				
+
+		//$tbl_invoices = DB::table('tbl_invoices')->where('sales_service_id','=',$id)->update(['soft_delete' => 1]);
 		return redirect('/service/list')->with('message','Successfully Deleted');
 	}
-	 
+
 	//service edit
    	public function serviceedit($id)
    	{
-     	$vehical=DB::table('tbl_vehicles')->where('soft_delete','=',0)->get()->toArray();     	
+     	$vehical=DB::table('tbl_vehicles')->where('soft_delete','=',0)->get()->toArray();
      	$customer=DB::table('users')->where([['role','Customer'],['soft_delete',0]])->get()->toArray();
      	$service = DB::table('tbl_services')->where('id','=',$id)->first();
 	 	$cus_id = $service->customer_id;
 	 	$vah_id = $service->vehicle_id;
      	$tbl_sales = DB::table('tbl_sales')->where('vehicle_id',$vah_id)->first();
-	 	
+
 	 	if(!empty($tbl_sales)){
-			$regi = DB::table('tbl_sales')->where('customer_id',$cus_id)->first(); 
+			$regi = DB::table('tbl_sales')->where('customer_id',$cus_id)->first();
 	 	}
 	 	else{
-			$regi = DB::table('tbl_vehicles')->where('id',$vah_id)->first();  
+			$regi = DB::table('tbl_vehicles')->where('id',$vah_id)->first();
 	 	}
 
 	 	if (!empty($regi)) {
@@ -809,7 +811,7 @@ class ServicesControler extends Controller
 
 	 	$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 	 	$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
-		if (isAdmin(Auth::User()->role_id)) 
+		if (isAdmin(Auth::User()->role_id))
 		{
 			$branchDatas = Branch::where('id', $adminCurrentBranch->branch_id)->get();
 			$employee=DB::table('users')->where([['role','employee'],['soft_delete',0], ['branch_id',$adminCurrentBranch->branch_id]])->get()->toArray();
@@ -841,57 +843,57 @@ class ServicesControler extends Controller
 	  	$Customername = $request->Customername;
       	$details = $request->details;
       	$date = $request->date;
-      	$mot_test_status = $request->motTestStatusCheckbox;      	
+      	$mot_test_status = $request->motTestStatusCheckbox;
       	$charge = $request->charge;
 
 	  	if (getDateFormat() == 'm-d-Y'){
 			$date = date('Y-m-d H:i:s',strtotime(str_replace('-','/', $date)));
 	  	}
 	  	else{
-			$date = date('Y-m-d H:i:s',strtotime($date));  
+			$date = date('Y-m-d H:i:s',strtotime($date));
 	  	}
-      	  
+
 	   	if ($ser_type == 'free'){
-		 	$charge = "0";  
+		 	$charge = "0";
 	   	}
 	   	if ($ser_type == 'paid'){
 			$charge = $request->charge;
-	  	}      
-    	
+	  	}
+
     	if ($mot_test_status == "") {
     		$mot_test_status = 0;
     	}
-	 
+
       	$services = Service::find($id);
       	$services->job_no = $job;
       	//$services->vehicle_id = $vehicalname;
       	$services->service_date = $date;
       	$services->title = $title;
       	$services->assign_to = $AssigneTo;
-      	$services->service_category = $service_category;	
+      	$services->service_category = $service_category;
       	$services->charge = $charge;
       	$services->mot_status = $mot_test_status;
       	$services->branch_id = $request->branch;
-	  
+
 	  	$tblservice = DB::table('tbl_services')->where('id','=',$id)->first();
 	  	$status = $tblservice->done_status;
 	  	if($status == 0){
       		$services->done_status = 0;
 	  	}
 	  	elseif($status == 1){
-			$services->done_status = 1;  
+			$services->done_status = 1;
 	  	}
 	  	elseif($status == 2){
-			$services->done_status = 2;   
-	  	}	
-      
+			$services->done_status = 2;
+	  	}
+
       	//$services->customer_id = $Customername;
       	$services->detail = $details;
       	$services->service_type = $ser_type;
 
       	//Custom Field Data
 		$custom = $request->custom;
-		$custom_fileld_value = array();	
+		$custom_fileld_value = array();
 		$custom_fileld_value_jason_array = array();
 		if(!empty($custom))
 		{
@@ -902,15 +904,15 @@ class ServicesControler extends Controller
 					$custom_fileld_value[] = array("id" => "$key", "value" => "$add_one_in");
 				}
 				else{
-					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");	
-				}				
-			}	
-		   
-			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value); 
+					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");
+				}
+			}
+
+			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value);
 
 			foreach($custom_fileld_value_jason_array as $key1 => $val1){
 				$serviceData = $val1;
-			}	
+			}
 			$services->custom_field = $serviceData;
 		}
       	$services->save();
@@ -920,42 +922,42 @@ class ServicesControler extends Controller
       	$washbay_status = $request->washbay;
       	$washbay_charge = $request->washBayCharge;
       	$washbay_data = Washbay::where([['service_id','=',$id],['jobcard_no','=',$job]])->first();
-      	
+
       	$invoicesData = DB::table('tbl_invoices')->where([['sales_service_id','=',$id],['job_card','=',$job],['type','=',0]])->first();
       	$serviceData = DB::table('tbl_services')->where('id','=',$id)->first();
-      	
-      	if (!empty($washbay_data)) 
+
+      	if (!empty($washbay_data))
       	{
-      		if ($washbay_status == 'on') 
+      		if ($washbay_status == 'on')
 	      	{
-	      		if (!empty($invoicesData)) 
-	      		{   
-	      			if ($washbay_charge != $washbay_data->price) 
+	      		if (!empty($invoicesData))
+	      		{
+	      			if ($washbay_charge != $washbay_data->price)
 	      			{
 	      				$totalAmount = $invoicesData->total_amount;
 		      			$grandTotal = $invoicesData->grand_total;
-		      			
+
 		      			$totalAmountNew = ($totalAmount - $washbay_data->price) + $washbay_charge;
-		      			$grandTotalNew = 0;		      			
+		      			$grandTotalNew = 0;
 		      			$discountNew = 0;
 		      			$taxNew = 0;
 		      			$grandTotalOld = 0;
-		      			
+
 		      			$discountIs = $invoicesData->discount;
 		      			$taxIs = $invoicesData->tax_name;
-		      				
-	      				if (!empty($discountIs)) {	      						      			
+
+	      				if (!empty($discountIs)) {
 	      					$discountNew = ($totalAmountNew * ($discountIs/100));
 	      				}
-	      			
-	      				$all_taxes = 0;	      				
+
+	      				$all_taxes = 0;
 	      				if (!empty($taxIs)) {
-	      					
+
 	      					$taxes = explode(', ', $taxIs);
 	      					foreach ($taxes as $tax) {
 	      						$singleTax = preg_replace("/[^0-9,.]/", "", $tax);
-	      						$all_taxes += $singleTax;                  
-	      					}	      					
+	      						$all_taxes += $singleTax;
+	      					}
 	      				}
 
 	      				$afterDiscountCutTotalAmount = $totalAmountNew - $discountNew;
@@ -965,42 +967,42 @@ class ServicesControler extends Controller
 	      				DB::table('tbl_invoices')->where([['sales_service_id','=',$id],['job_card','=',$job],['type','=',0]])->update(['total_amount' => $totalAmountNew, 'grand_total' => $grandTotalNew]);
 
 	      				Washbay::where([['service_id','=',$id],['jobcard_no','=',$job]])->update(['price' => $washbay_charge]);
-	      				
+
 		      		}
 	      		}
 	      		else
 	      		{
 	      			Washbay::where([['service_id','=',$id],['jobcard_no','=',$job]])->update(['price' => $washbay_charge]);
-	      		}      		
+	      		}
 	      	}
 	      	else
 	      	{
-	      		if (!empty($invoicesData)) 
-	      		{   
+	      		if (!empty($invoicesData))
+	      		{
       				$totalAmount = $invoicesData->total_amount;
 	      			$grandTotal = $invoicesData->grand_total;
-	      			
+
 	      			$totalAmountNew = $totalAmount - $washbay_data->price;
-	      			$grandTotalNew = 0;		      			
+	      			$grandTotalNew = 0;
 	      			$discountNew = 0;
 	      			$taxNew = 0;
 	      			$grandTotalOld = 0;
-	      			
+
 	      			$discountIs = $invoicesData->discount;
 	      			$taxIs = $invoicesData->tax_name;
-	      				
-      				if (!empty($discountIs)) {	      						      			
+
+      				if (!empty($discountIs)) {
       					$discountNew = ($totalAmountNew * ($discountIs/100));
       				}
-      			
-      				$all_taxes = 0;	      				
+
+      				$all_taxes = 0;
       				if (!empty($taxIs)) {
-      					
+
       					$taxes = explode(', ', $taxIs);
       					foreach ($taxes as $tax) {
       						$singleTax = preg_replace("/[^0-9,.]/", "", $tax);
-      						$all_taxes += $singleTax;                  
-      					}	      					
+      						$all_taxes += $singleTax;
+      					}
       				}
 
       				$afterDiscountCutTotalAmount = $totalAmountNew - $discountNew;
@@ -1017,7 +1019,7 @@ class ServicesControler extends Controller
       	}
       	else
       	{
-      		if ($washbay_status == 'on') 
+      		if ($washbay_status == 'on')
 	      	{
 	      		$washbays = new Washbay;
 	      		$washbays->service_id = $id;
@@ -1027,32 +1029,32 @@ class ServicesControler extends Controller
 	      		$washbays->price = $washbay_charge;
 	      		$washbays->save();
 
-	      		if (!empty($invoicesData)) 
-	      		{   
+	      		if (!empty($invoicesData))
+	      		{
       				$totalAmount = $invoicesData->total_amount;
 	      			$grandTotal = $invoicesData->grand_total;
-	      			
+
 	      			$totalAmountNew = $totalAmount + $washbay_charge;
-	      			$grandTotalNew = 0;		      			
+	      			$grandTotalNew = 0;
 	      			$discountNew = 0;
 	      			$taxNew = 0;
 	      			$grandTotalOld = 0;
-	      			
+
 	      			$discountIs = $invoicesData->discount;
 	      			$taxIs = $invoicesData->tax_name;
-	      				
-      				if (!empty($discountIs)) {	      						      			
+
+      				if (!empty($discountIs)) {
       					$discountNew = ($totalAmountNew * ($discountIs/100));
       				}
-      			
-      				$all_taxes = 0;	      				
+
+      				$all_taxes = 0;
       				if (!empty($taxIs)) {
-      					
+
       					$taxes = explode(', ', $taxIs);
       					foreach ($taxes as $tax) {
       						$singleTax = preg_replace("/[^0-9,.]/", "", $tax);
-      						$all_taxes += $singleTax;                  
-      					}	      					
+      						$all_taxes += $singleTax;
+      					}
       				}
 
       				$afterDiscountCutTotalAmount = $totalAmountNew - $discountNew;
@@ -1064,61 +1066,61 @@ class ServicesControler extends Controller
 	      	}
       	}
 
-      	return redirect('/service/list')->with('message','Successfully Updated');;       
+      	return redirect('/service/list')->with('message','Successfully Updated');;
    	}
-    
+
 	//get used coupon data
    	public function Used_Coupon_Data(Request $request)
-   	{  
+   	{
 		//$cpn_no = Input::get('coupon_no');
 		$cpn_no = $request->coupon_no;
-		
+
 		$used_cpn_data = DB::table('tbl_jobcard_details')->where('coupan_no',$cpn_no)->first();
 		$status = $used_cpn_data->done_status;
 		$jb_no = $used_cpn_data->jocard_no;
-		
+
 		$vhi_no = DB::table('tbl_services')->where('job_no',$cpn_no)->first();
-		$vehi_name = $vhi_no->vehicle_id;		
+		$vehi_name = $vhi_no->vehicle_id;
 		$regi = DB::table('tbl_sales')->where('vehicle_id',$vehi_name)->first();
-		$ser_tab = DB::table('tbl_services')->where('job_no',$jb_no)->first();	
+		$ser_tab = DB::table('tbl_services')->where('job_no',$jb_no)->first();
 		$logo = DB::table('tbl_settings')->first();
-					
+
 		if(!empty($used_cpn_data))
 		{
-			$service_id = $used_cpn_data->service_id;			
-			$cus_id = $used_cpn_data->customer_id;		
+			$service_id = $used_cpn_data->service_id;
+			$cus_id = $used_cpn_data->customer_id;
 			$custo_info = DB::table('users')->where('id',$cus_id)->first();
 			$mob = $custo_info->mobile_no;
 			$city = $custo_info->city_id;
-			$state = $custo_info->state_id; 
+			$state = $custo_info->state_id;
 			$country = $custo_info->country_id;
-					
+
 			$all_data = DB::table('tbl_service_pros')->where([['service_id',$service_id],['type','=',0]])->get()->toArray();
 			$all_data2 = DB::table('tbl_service_pros')->where([['service_id',$service_id],['type','=',1]])->get()->toArray();
 		}
-		
+
 		$html = view('service.couponmodel')->with(compact('service_id','custo_info','logo','mob','custo_info','status','vehi_name','regi','city','state','country','all_data','all_data2','used_cpn_data','vhi_no','ser_tab','cpn_no'))->render();
 		return response()->json(['success' => true, 'html' => $html]);
    }
-   
+
    //service modal view
    public function serviceview(Request $request)
-   {	
+   {
 		//$ser_id = Input::get('servicesid');
 		$ser_id = $request->servicesid;
 		//$vhi_no = DB::table('tbl_services')->where('id',$ser_id)->first();
 		$vhi_no = Service::where('id',$ser_id)->first();
 		$vehi_name = $vhi_no->vehicle_id;
 		$cus_id = $vhi_no->customer_id;
-		
+
 		//$tbl_sales = DB::table('tbl_sales')->where('vehicle_id',$vehi_name)->first();
 		$tbl_sales = Sale::where('vehicle_id',$vehi_name)->first();
 		 if(!empty($tbl_sales)){
-			//$regi = DB::table('tbl_sales')->where('vehicle_id',$vehi_name)->first(); 
+			//$regi = DB::table('tbl_sales')->where('vehicle_id',$vehi_name)->first();
 			$regi = Sale::where('vehicle_id',$vehi_name)->first();
 		 }
 		 else{
-			//$regi = DB::table('tbl_vehicles')->where('id',$vehi_name)->first();  
+			//$regi = DB::table('tbl_vehicles')->where('id',$vehi_name)->first();
 			$regi = Vehicle::where('id',$vehi_name)->first();
 		 }
 
@@ -1126,10 +1128,10 @@ class ServicesControler extends Controller
 		$logo = Setting::first();
 		//$custo_info = DB::table('users')->where('id',$cus_id)->first();
 		$custo_info = User::where('id',$cus_id)->first();
-		
+
 		// $mob = $custo_info->mobile_no;
 		// $city = $custo_info->city_id;
-		// $state = $custo_info->state_id; 
+		// $state = $custo_info->state_id;
 		// $country = $custo_info->country_id;
 
 		//$used_cpn_data = DB::table('tbl_jobcard_details')->where('service_id',$ser_id)->first();
@@ -1137,9 +1139,9 @@ class ServicesControler extends Controller
 		if(!empty($used_cpn_data))
 		{
 			$status = $used_cpn_data->done_status;
-			$service_id = $used_cpn_data->service_id;			
-			// $cus_id = $used_cpn_data->customer_id;						
-						
+			$service_id = $used_cpn_data->service_id;
+			// $cus_id = $used_cpn_data->customer_id;
+
 			$all_data = DB::table('tbl_service_pros')->where([['service_id',$service_id],['type','=',0]])->get()->toArray();
 			$all_data2 = DB::table('tbl_service_pros')->where([['service_id',$service_id],['type','=',1]])->get()->toArray();
 		}
@@ -1153,7 +1155,7 @@ class ServicesControler extends Controller
 		$html = view('service.servicemodel')->with(compact('service_id','custo_info','logo','custo_info','status','vehi_name','regi','all_data','all_data2','used_cpn_data','vhi_no','tbl_custom_fields', 'washbay_data'))->render();
 
 		return response()->json(['success' => true, 'html' => $html]);
-   	}  
+   	}
 
    	/*For get customer name by auto searchable select box*/
    public function get_customer_name(Request $request)
@@ -1170,6 +1172,6 @@ class ServicesControler extends Controller
         }
 
         return response()->json($customer_name);
-   	}   	
-   	
+   	}
+
 }

@@ -41,13 +41,13 @@ Route::get('/dashboard/view/up-modal', ['as'=>'/dashboard/view/up-modal','uses'=
 Route::auth();
 
 //profile
-Route::get('setting/profile','Profilecontroller@index');	
-Route::post('/setting/profile/update/{id}','Profilecontroller@update');	
+Route::get('setting/profile','Profilecontroller@index');
+Route::post('/setting/profile/update/{id}','Profilecontroller@update');
 
 //Purchase
 Route::group(['prefix'=>'purchase'],function()
 {
-	Route::get('/add',['as'=>'purchase/add','uses'=>'Purchasecontroller@index'])->middleware('can:purchase_add');	
+	Route::get('/add',['as'=>'purchase/add','uses'=>'Purchasecontroller@index'])->middleware('can:purchase_add');
 	Route::post('/store',['as'=>'purchase/store','uses'=>'Purchasecontroller@store'])->middleware('can:purchase_add');
 	Route::get('/list',['as'=>'purchase/list','uses'=>'Purchasecontroller@listview'])->middleware('can:purchase_view');
 	Route::get('/list/pview/{id}',['as'=>'purchase/list','uses'=>'Purchasecontroller@listview1'])->middleware('can:purchase_view');
@@ -66,27 +66,27 @@ Route::group(['prefix'=>'purchase'],function()
 
 	Route::get('/add/getproduct',['as'=>'purchase/list/edit','uses'=>'Purchasecontroller@getproduct']);
 	Route::get('/add/getqty',['as'=>'purchase/list/edit','uses'=>'Purchasecontroller@getqty']);
-	
+
 	Route::get('/add/getproductname',['as'=>'add/getproductname','uses'=>'Purchasecontroller@getproductname']);
 	Route::get('deleteproduct',['as'=>'purchase/deleteproduct','uses'=>'Purchasecontroller@deleteproduct']);
-	Route::get('sale_part/deleteproduct','Purchasecontroller@sale_part_destroy');	
+	Route::get('sale_part/deleteproduct','Purchasecontroller@sale_part_destroy');
 
 	/*New route for get first product data of selected product type*/
-	Route::get('/getfirstproductdata','Purchasecontroller@getFirstProductData');	
-	
+	Route::get('/getfirstproductdata','Purchasecontroller@getFirstProductData');
+
 });
 
 //Stock
 Route::group(['prefix'=>'stoke'],function()
-{	
+{
 	Route::get('/list',['as'=>'stoke/list','uses'=>'Stockcontroller@index'])->middleware('can:stock_view');
-	
+
 	Route::get('/list/edit/{id}',['as'=>'stoke/list/edit','uses'=>'Stockcontroller@edit']);
 	Route::post('/list/edit/update/{id}',['as'=>'stoke/list/edit/update/{id}','uses'=>'Stockcontroller@update']);
 	Route::get('/list/stockview',['as'=>'stoke/list/stockview','uses'=>'Stockcontroller@stockview'])->middleware('can:stock_view');
 });
 
-// Customer 
+// Customer
 Route::group(['prefix'=>'customer'],function()
 {
 	Route::get('/add',['as'=>'customer/add','uses'=>'Customercontroller@customeradd'])->middleware('can:customer_add');
@@ -94,8 +94,7 @@ Route::group(['prefix'=>'customer'],function()
 	Route::get('/list',['as'=>'customer/list','uses'=>'Customercontroller@index'])->middleware('can:customer_view');
 	Route::get('/list/{id}',['as'=>'customer/list/{id}','uses'=>'Customercontroller@customershow'])->middleware('can:customer_view');
 	Route::get('/list/delete/{id}',['as'=>'customer/list/delete/{id}','uses'=>'Customercontroller@destroy'])->middleware('can:customer_delete');
-
-	Route::get('/list/edit/{id}',['as'=>'customer/list/edit/{id}','uses'=>'Customercontroller@customeredit']);	
+	Route::get('/list/edit/{id}',['as'=>'customer/list/edit/{id}','uses'=>'Customercontroller@customeredit']);
 	Route::post('/list/edit/update/{id}',['as'=>'customer/list/edit/update/{id}','uses'=>'Customercontroller@customerupdate']);
 
 	Route::get('/free-open',['as'=>'customer/free-open','uses'=>'Customercontroller@free_open_model']);
@@ -132,29 +131,31 @@ Route::group(['prefix'=>'vehicle'],function()
     Route::post('list/edit/update/{id}',['as'=>'/vehical/list/edit/update/{id}','uses'=>'VehicalControler@updatevehical'])->middleware('can:vehicle_edit');
 
     Route::get('/vehicaltypefrombrand','VehicalControler@vehicaltype');
-    
+
+	Route::get('/registration',['as'=>'vehicle/registration','uses'=>'VehicalControler@customerRegistration'])->middleware('can:vehicle_add');
    //vihical type,brand,fuel,model
 	Route::get('vehicle_type_add',['as'=>'vehical/vehicle_type_add','uses'=>'VehicalControler@vehicaltypeadd']);
 	Route::get('/vehicaltypedelete',['as'=>'vehical/vehicaltypedelete','uses'=>'VehicalControler@deletevehicaltype']);
-	
-	
+
+
 	Route::get('vehicle_brand_add',['as'=>'vehical/vehicle_brand_add','uses'=>'VehicalControler@vehicalbrandadd']);
 	Route::get('/vehicalbranddelete',['as'=>'/vehical/vehicalbranddelete','uses'=>'VehicalControler@deletevehicalbrand']);
-	
-	
+
+
 	Route::get('vehicle_fuel_add',['as'=>'vehical/vehicle_fuel_add','uses'=>'VehicalControler@fueladd']);
 	Route::get('fueltypedelete',['as'=>'vehical/fueltypedelete','uses'=>'VehicalControler@fueltypedelete']);
- 
-   
+
+
 	Route::get('add/getDescription','VehicalControler@getDescription');
 	Route::get('delete/getDescription','VehicalControler@deleteDescription');
 	Route::get('add/getImages','VehicalControler@getImages');
 	Route::get('delete/getImages','VehicalControler@deleteImages');
 	Route::get('add/getcolor','VehicalControler@getcolor');
 	Route::get('delete/getcolor','VehicalControler@deletecolor');
-	
+
 	Route::get('vehicle_model_add','VehicalControler@add_vehicle_model');
-	Route::get('vehicle_model_delete','VehicalControler@delete_vehi_model');	
+	Route::get('vehicle_model_delete','VehicalControler@delete_vehi_model');
+	Route::get('/vehicalnumberplate','VehicalControler@vehicalnumberplate');
 });
 
 
@@ -235,7 +236,7 @@ Route::group(['prefix'=>'service'],function()
   	Route::get('get_obs','ServicesControler@Get_Observation_Pts');
   	Route::get('used_coupon_data','ServicesControler@Used_Coupon_Data');
   	Route::get('getregistrationno','ServicesControler@getregistrationno');
-  
+
   	Route::POST('/customeradd','ServicesControler@customeradd');
   	Route::get('/vehicleadd','ServicesControler@vehicleadd');
 
@@ -250,9 +251,9 @@ Route::group(['prefix'=>'quotation'],function()
 	Route::get('list',['as'=>'quotation/list','uses'=>'QuotationController@list'])->middleware('can:quotation_view');
 	Route::get('list/view',['as'=>'quotation/list/view','uses'=>'QuotationController@quotationView'])->middleware('can:quotation_view');
 
-	Route::get('add',['as'=>'quotation/add','uses'=>'QuotationController@index'])->middleware('can:quotation_add');
+	Route::get('add/{id?}',['as'=>'quotation/add/{id?}','uses'=>'QuotationController@index'])->middleware('can:quotation_add');
 	Route::post('store',['as'=>'quotation/store','uses'=>'QuotationController@store'])->middleware('can:quotation_add');
-	
+
 	Route::get('list/edit/{id}',['as'=>'quotation/list/edit/{id}','uses'=>'QuotationController@quotationEdit'])->middleware('can:quotation_edit');
 	Route::post('list/edit/update/{id}',['as'=>'quotation/list/edit/update/{id}','uses'=>'QuotationController@quotationUpdate'])->middleware('can:quotation_edit');
 
@@ -299,7 +300,7 @@ Route::post('/invoice/stripe','InvoicePaymentController@stripe');
 
 //Supllier
 Route::group(['prefix'=>'supplier'],function()
-{	
+{
 	Route::get('/list','Suppliercontroller@supplierlist')->middleware('can:supplier_view');
 	Route::get('/add','Suppliercontroller@supplieradd')->middleware('can:supplier_add');
 	Route::post('/store','Suppliercontroller@storesupplier')->middleware('can:supplier_add');
@@ -328,7 +329,7 @@ Route::group(['prefix'=>'setting'],function()
 
 	// stripe setting routes
 	Route::post('/date/store',['as'=>'storetimezone','uses'=>'Timezonecontroller@datestore']);
-	
+
 	//language
 	Route::get('language/direction/list',['as'=>'listlanguagedirection','uses'=>'Languagecontroller@index1']);
 	Route::post('language/direction/store',['as'=>'storelanguagedirection','uses'=>'Languagecontroller@store1']);
@@ -355,7 +356,7 @@ Route::group(['prefix'=>'setting'],function()
 	Route::post('holiday/store','HoursController@holiday')->middleware('can:businesshours_add');
 	Route::get('deleteholiday/{id}','HoursController@deleteholiday')->middleware('can:businesshours_delete');
 	Route::get('/deletehours/{id}','HoursController@deletehours')->middleware('can:businesshours_delete');
-	
+
 	//currancy
 	Route::post('currancy/store','Timezonecontroller@currancy');
 
@@ -390,7 +391,7 @@ Route::group(['prefix'=>'employee'],function()
 	Route::patch('/edit/update/{id}','employeecontroller@update');
 
 	Route::get('/list/delete/{id}',['as'=>'/employee/list/delete/{id}','uses'=>'employeecontroller@destory'])->middleware('can:employee_delete');
-	
+
 	Route::get('/free_service',['as'=>'/employee/free_service','uses'=>'employeecontroller@free_service']);
 	Route::get('/paid_service',['as'=>'/employee/paid_service','uses'=>'employeecontroller@paid_service']);
 	Route::get('/repeat_service',['as'=>'/employee/repeat_service','uses'=>'employeecontroller@repeat_service']);
@@ -424,7 +425,7 @@ Route::group(['prefix'=>'product'],function()
 	Route::get('/list/edit/{id}',['as'=>'editproduct','uses'=>'Productcontroller@edit'])->middleware('can:product_edit');
 	Route::post('/list/edit/update/{id}',['as'=>'updateproduct','uses'=>'Productcontroller@update'])->middleware('can:product_edit');
 	Route::get('/list/delete/{id}',['as'=>'deleteproduct','uses'=>'Productcontroller@destroy'])->middleware('can:product_delete');
-	
+
 	Route::get('/unit',['as'=>'product/unit','uses'=>'Productcontroller@unitadd']);
 	Route::get('/unitdelete',['as'=>'product/unitdelete','uses'=>'Productcontroller@unitdelete']);
 
@@ -507,7 +508,7 @@ Route::group(['prefix'=>'jobcard'],function()
 {
 	Route::get('/list',['as'=>'list/jobcard','uses'=>'JobCardcontroller@index'])->middleware('can:jobcard_view');/*Get Jobcard Listing Page*/
 	Route::get('/list/jview/{id}',['as'=>'list/jview','uses'=>'JobCardcontroller@indexid']);
-	
+
 	/*Display ProcessJob Form and Store data of this form*/
 	Route::get('/list/{id}',['as'=>'viewjobcard','uses'=>'JobCardcontroller@view'])->middleware('can:jobcard_edit');/*Display ProcessJob Form(If click on ProcessJob Button on Listing Page)*/
 	Route::post('/store',['as'=>'jobcard/store','uses'=>'JobCardcontroller@store'])->middleware('can:jobcard_edit');/*Store ProcessJob data*/
@@ -528,7 +529,7 @@ Route::get('/jobcard/getprice','JobCardcontroller@getprice');
 Route::get('/jobcard/gettotalprice','JobCardcontroller@gettotalprice');
 
 /*Invoice View button inside listing page action row View Invoice*/
-Route::get('/jobcard/modalview','JobCardcontroller@modalview')->middleware('can:jobcard_view'); 
+Route::get('/jobcard/modalview','JobCardcontroller@modalview')->middleware('can:jobcard_view');
 
 Route::get('/jobcard/gatepass/autofill_data','JobCardcontroller@getrecord');
 
@@ -563,7 +564,7 @@ Route::get('/jobcard/complete_process_status','JobCardcontroller@complete_proces
 //getpass
 Route::group(['prefix'=>'gatepass'],function()
 {
-	Route::get('/list',['as'=>'gatepass/list','uses'=>'Getpasscontroller@index'])->middleware('can:gatepass_view'); 
+	Route::get('/list',['as'=>'gatepass/list','uses'=>'Getpasscontroller@index'])->middleware('can:gatepass_view');
 	Route::get('/add',['as'=>'gatepass/list','uses'=>'Getpasscontroller@addgatepass'])->middleware('can:gatepass_add');
 	Route::post('/store',['as'=>'gatepass/list','uses'=>'Getpasscontroller@store'])->middleware('can:gatepass_add');
 	Route::get('/list/delete/{id}',['as'=>'/gatepass/list/delete/{id}','uses'=>'Getpasscontroller@delete'])->middleware('can:gatepass_delete');
@@ -701,28 +702,28 @@ Route::group(['prefix'=>'branchadmin'],function()
 	Route::get('/list/delete/{id}',['as'=>'/branchadmin/list/delete/{id}','uses'=>'BranchAdminController@destroy'])->middleware('can:branchAdmin_delete');
 });
 
-Route::get('/clear-cache', function() 
+Route::get('/clear-cache', function()
 {
     $exitCode = Artisan::call('cache:clear');
     return '<h1>Cache facade value cleared</h1>';
 });
 
 //Clear Route cache:
-Route::get('/route-cache', function() 
+Route::get('/route-cache', function()
 {
     $exitCode = Artisan::call('route:clear');
     return '<h1>Route cache cleared</h1>';
 });
 
 //Clear View cache:
-Route::get('/view-clear', function() 
+Route::get('/view-clear', function()
 {
     $exitCode = Artisan::call('view:clear');
     return '<h1>View cache cleared</h1>';
 });
 
 //Clear Config cache:
-Route::get('/config-cache', function() 
+Route::get('/config-cache', function()
 {
     $exitCode = Artisan::call('config:cache');
     return '<h1>Clear Config cleared</h1>';

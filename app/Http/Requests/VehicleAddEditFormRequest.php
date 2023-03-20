@@ -24,6 +24,8 @@ class VehicleAddEditFormRequest extends FormRequest
     public function rules()
     {
         return [
+            'number_plate' => 'required',
+            'Customername' => 'required',
             'vehical_id' => 'required',
             'vehicabrand' => 'required',
             'fueltype' => 'required',
@@ -37,6 +39,8 @@ class VehicleAddEditFormRequest extends FormRequest
     public function messages()
     {
         return [
+            'number_plate.required' => trans('Number Plate is required.'),
+            'Customername.required' => trans('Customer Name is required.'),
             'vehical_id.required' => trans('app.Vehicle type is required.'),
             'vehicabrand.required' => trans('app.Vehicle brand is required.'),
             'fueltype.required' => trans('app.Fuel type is required.'),

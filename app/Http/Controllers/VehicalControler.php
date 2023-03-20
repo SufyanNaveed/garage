@@ -43,15 +43,15 @@ class VehicalControler extends Controller
     public function decription()
     {
      	return view ('vehicle.description');
-    }	
+    }
 
 	//vehical list
 	public function vehicallist()
-	{    
-		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();		
+	{
+		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
 
-		if (!isAdmin(Auth::User()->role_id)) 
+		if (!isAdmin(Auth::User()->role_id))
         {
         	if (getUsersRole(Auth::User()->role_id) == 'Customer')
 			{
@@ -63,30 +63,29 @@ class VehicalControler extends Controller
 			}
 			elseif (getUsersRole(Auth::user()->role_id) == 'Support Staff' || getUsersRole(Auth::user()->role_id) == 'Accountant' || getUsersRole(Auth::user()->role_id) == 'Branch Admin')
 			{
-			
+
 	        	$vehical = Vehicle::where([['soft_delete',0], ['branch_id',$currentUser->branch_id]])->orderBy('id','DESC')->get();
 			}
         }
-        else 
+        else
         {
             $vehical = Vehicle::where([['soft_delete',0], ['branch_id',$adminCurrentBranch->branch_id]])->orderBy('id','DESC')->get();
         }
-	   
+
 		return view('vehicle.list',compact('vehical'));
 	}
 
 
 	//Vehicle add form
 	public function index()
-	{        
+	{
 	    $vehical_type = DB::table('tbl_vehicle_types')->where('soft_delete','=',0)->get()->toArray();
 	    $vehical_brand = DB::table('tbl_vehicle_brands')->where('soft_delete','=',0)->get()->toArray();
 	    $fuel_type = DB::table('tbl_fuel_types')->where('soft_delete','=',0)->get()->toArray();
 	    $color = DB::table('tbl_colors')->where('soft_delete','=',0)->get()->toArray();
 	    $model_name = DB::table('tbl_model_names')->where('soft_delete','=',0)->get()->toArray();
-
 		$tbl_custom_fields = DB::table('tbl_custom_fields')->where([['form_name','=','vehicle'],['always_visable','=','yes'],['soft_delete','=',0]])->get()->toArray();
-						
+
 		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
 		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
 		if (isAdmin(Auth::User()->role_id)) {
@@ -99,27 +98,27 @@ class VehicalControler extends Controller
 			$branchDatas = Branch::where('id', $currentUser->branch_id)->get();
 		}
 
-		return view ('vehicle.add',compact('vehical_type','vehical_brand','fuel_type','color','model_name','tbl_custom_fields', 'branchDatas'));    
+		return view ('vehicle.add',compact('vehical_type','vehical_brand','fuel_type','color','model_name','tbl_custom_fields', 'branchDatas'));
 	}
-	
+
 	//Add vehical type
 	public function vehicaltypeadd(Request $request)
-	{		
+	{
 		$vehical_type = $request->vehical_type;
-		
+
 		$count = DB::table('tbl_vehicle_types')->where('vehicle_type','=',$vehical_type)->count();
-		
+
 		if ($count==0){
 			$vehicaltype = new Vehicletype;
 			$vehicaltype ->vehicle_type = $vehical_type;
 			$vehicaltype ->save();
-			 echo $vehicaltype->id;		
+			 echo $vehicaltype->id;
 		}
 		else{
 			return "01";
 		}
 	}
-	
+
 	// Add vehical brand
 	public function vehicalbrandadd(Request $request)
 	{
@@ -127,19 +126,19 @@ class VehicalControler extends Controller
 		$vehical_brand1 = $request->vehical_brand;
 
 		$count = DB::table('tbl_vehicle_brands')->where([['vehicle_id','=',$vehical_id],['vehicle_brand','=',$vehical_brand1]])->count();
-		
+
 		if( $count == 0){
 			$vehical_brand = new Vehiclebrand;
 			$vehical_brand ->vehicle_id = $vehical_id;
 			$vehical_brand ->vehicle_brand = $vehical_brand1;
-			$vehical_brand->save(); 
+			$vehical_brand->save();
 			echo $vehical_brand->id;
 		}
 		else{
 			return "01";
 		}
 	}
-	
+
    //Add fuel type
 	public function fueladd(Request $request)
 	{
@@ -157,56 +156,56 @@ class VehicalControler extends Controller
         	return "01";
         }
     }
-	
+
 	// Add Vehicle Model
 	public function add_vehicle_model(Request $request)
 	{
 		$model_name = $request->model_name;
 
-		$count = DB::table('tbl_model_names')->where('model_name','=',$model_name)->count();		
+		$count = DB::table('tbl_model_names')->where('model_name','=',$model_name)->count();
 		if($count == 0)
 		{
 			$tbl_model_names = new tbl_model_names;
 			$tbl_model_names->model_name = $model_name;
 			$tbl_model_names->save();
-			
+
 			return $tbl_model_names->id;
 		}
 		else{
 			return "01";
 		}
 	}
-	
+
    // Vehical type two brand select
 	public function vehicaltype(Request $request)
 	{
 		$id = $request->vehical_id;
 
 		$vehical_brand = DB::table('tbl_vehicle_brands')->where([['vehicle_id','=',$id],['soft_delete','=',0]])->get()->toArray();
-				
+
 		if(!empty($vehical_brand))
 		{
 			foreach($vehical_brand as $vehical_brands)
 			{ ?>
 				<option value="<?php echo  $vehical_brands->id; ?>"  class="brand_of_type"><?php echo $vehical_brands->vehicle_brand; ?></option>
-			<?php } 
-		}	
+			<?php }
+		}
 	}
-	
+
 	// Vehical type Delete
    	public function deletevehicaltype(Request $request)
 	{
 		$id = $request->vtypeid;
-		//DB::table('tbl_vehicle_types')->where('id','=',$id)->delete();			
+		//DB::table('tbl_vehicle_types')->where('id','=',$id)->delete();
 		//DB::table('tbl_vehicle_brands')->where('vehicle_id','=',$id)->delete();
 
 		DB::table('tbl_vehicle_types')->where('id','=',$id)->update(['soft_delete' => 1]);
 		DB::table('tbl_vehicle_brands')->where('vehicle_id','=',$id)->update(['soft_delete' => 1]);
 	}
-	 
+
 	// Vehical brand Delete
     public function deletevehicalbrand(Request $request)
-    {	
+    {
 		$id = $request->vbrandid;
      	//DB::table('tbl_vehicle_brands')->where('id','=',$id)->delete();
      	DB::table('tbl_vehicle_brands')->where('id','=',$id)->update(['soft_delete' => 1]);
@@ -214,24 +213,24 @@ class VehicalControler extends Controller
 
     // Fual type Delete
     public function fueltypedelete(Request $request)
-    {  	
+    {
        	$id = $request->fueltypeid;
        	//$fuel=DB::table('tbl_fuel_types')->where('id','=',$id)->delete();
        	$fuel = DB::table('tbl_fuel_types')->where('id','=',$id)->update(['soft_delete' => 1]);
     }
-	   
+
 	// Vehical Model Name Delete
 	public function delete_vehi_model(Request $request)
-	{	
+	{
 		$id = $request->mod_del_id;
 		//tbl_model_names::destroy($id);
 		DB::table('tbl_model_names')->where('id','=',$id)->update(['soft_delete' => 1]);
 	}
-	   
+
 	// Vehical save
 	public function vehicalstore(Request $request)
 	{
-		/*$this->validate($request, [  
+		/*$this->validate($request, [
          	'price' => 'numeric',
 	    ]);*/
 
@@ -251,6 +250,7 @@ class VehicalControler extends Controller
 		$engine = $request->engine;
 		$nogears = $request->gearno;
 		$numberPlate = $request->number_plate;
+		$CustomerName = $request->Customername;
 
 		$doms = $request->dom;
 
@@ -265,8 +265,8 @@ class VehicalControler extends Controller
 		}
 		else{
 			$dom = null;
-		}	
-     
+		}
+
 		$vehical = new Vehicle;
 		$vehical->vehicletype_id = $vehical_type;
 		$vehical->chassisno = $chasicno;
@@ -286,11 +286,12 @@ class VehicalControler extends Controller
 		$vehical->nogears = $nogears;
 		$vehical->number_plate = $numberPlate;
 		$vehical->branch_id = $request->branch;
+		$vehical->customer_id = $request->Customername;
 
-		//custom field save	
+		//custom field save
 		//$custom=Input::get('custom');
 		$custom = $request->custom;
-		$custom_fileld_value = array();	
+		$custom_fileld_value = array();
 		$custom_fileld_value_jason_array = array();
 		if(!empty($custom))
 		{
@@ -301,16 +302,16 @@ class VehicalControler extends Controller
 					$custom_fileld_value[] = array("id" => "$key", "value" => "$add_one_in");
 				}
 				else{
-					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");	
-				}				
-			}	
-		   
-			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value); 
+					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");
+				}
+			}
+
+			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value);
 
 			foreach($custom_fileld_value_jason_array as $key1 => $val1)
 			{
 				$vehicleData = $val1;
-			}	
+			}
 			$vehical->custom_field = $vehicleData;
 		}
 		$vehical->save();
@@ -320,7 +321,7 @@ class VehicalControler extends Controller
 
         //$descriptionsdata = Input::get('description');
         $descriptionsdata = $request->description;
-     
+
 		foreach($descriptionsdata as $key => $value)
 		{
 			$desc = $descriptionsdata[$key];
@@ -328,20 +329,20 @@ class VehicalControler extends Controller
 		    $descriptions->vehicle_id = $id;
 		    $descriptions->vehicle_description = $desc;
 		    $descriptions->save();
-		}     
+		}
        $vehicals = DB::table('tbl_vehicles')->orderBy('id','desc')->first();
-       $id = $vehicles->id;	
-	   
+       $id = $vehicles->id;
+
 	   $image = $request->image;
 	   if(!empty($image))
 		{
 			$files = $image;
-			
+
 			foreach($files as $file)
 			{
 				$filename = $file->getClientOriginalName();
 				$file->move(public_path().'/vehicle/', $file->getClientOriginalName());
-				$images = new tbl_vehicle_images; 
+				$images = new tbl_vehicle_images;
 				$images->vehicle_id = $id;
 				$images->image = $filename;
 				$images->save();
@@ -352,23 +353,24 @@ class VehicalControler extends Controller
 
         //$colores = Input::get('color');
    		$colores = $request->color;
-        
+
         foreach ($colores as $key => $value)
 		{
          	$colorse = $colores[$key];
          	$color1 = new tbl_vehicle_colors;
          	$color1->vehicle_id = $id;
 		    $color1->color = $colorse;
-		    $color1->save();   	 
+		    $color1->save();
          }
-        return redirect('/vehicle/list')->with('message','Successfully Submitted');
+       // return redirect('/vehicle/list')->with('message','Successfully Submitted');
+        return redirect('/quotation/add/'.$id)->with('message','Successfully Submitted');
 	}
-	
-	
+
+
 	// Vehical  Delete
     public function destory($id)
 	{
-		
+
 		//$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where('vehicle_id','=',$id)->delete();
 		$tbl_checkout_categories = DB::table('tbl_checkout_categories')->where('vehicle_id','=',$id)->update(['soft_delete' => 1]);
 		//$tbl_points = DB::table('tbl_points')->where('vehicle_id','=',$id)->delete();
@@ -384,14 +386,14 @@ class VehicalControler extends Controller
 		$vehical = DB::table('tbl_vehicles')->where('id','=',$id)->update([
 			'soft_delete' => 1]);
          return redirect('vehicle/list')->with('message','Successfully Deleted');
-	}	
+	}
 
     // Vehical  Edit
     public function editvehical($id)
-	{  
+	{
 		$editid=$id;
 
-	    $vehical_type = DB::table('tbl_vehicle_types')->where('soft_delete','=',0)->get()->toArray();	 
+	    $vehical_type = DB::table('tbl_vehicle_types')->where('soft_delete','=',0)->get()->toArray();
 	    $vehical_brand = DB::table('tbl_vehicle_brands')->where('soft_delete','=',0)->get()->toArray();
 	    $fueltype = DB::table('tbl_fuel_types')->where('soft_delete','=',0)->get()->toArray();
 	    $color = DB::table('tbl_colors')->where('soft_delete','=',0)->get()->toArray();
@@ -399,7 +401,7 @@ class VehicalControler extends Controller
 	    $colors1 =DB::table('tbl_vehicle_colors')->where('vehicle_id','=',$id)->get()->toArray();
 	    $images1=DB::table('tbl_vehicle_images')->where('vehicle_id','=',$id)->get()->toArray();
 	    $vehicaldes=DB::table('tbl_vehicle_discription_records')->where('vehicle_id','=',$id)->get()->toArray();
-	    $vehicaledit=DB::table('tbl_vehicles')->where('id','=',$id)->first();        
+	    $vehicaledit=DB::table('tbl_vehicles')->where('id','=',$id)->first();
         $model_name = DB::table('tbl_model_names')->where('soft_delete','=',0)->get()->toArray();
 
         //Custom Field Data
@@ -407,7 +409,7 @@ class VehicalControler extends Controller
 
         $currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
         $adminCurrentBranch = BranchSetting::where('id','=',1)->first();
-		if (isAdmin(Auth::User()->role_id)) 
+		if (isAdmin(Auth::User()->role_id))
 		{
 			$branchDatas = Branch::where('id', '=', $adminCurrentBranch->branch_id)->get();
 		}
@@ -420,13 +422,13 @@ class VehicalControler extends Controller
 		}
 
 		return view ('vehicle.edit',compact('vehicaledit','vehicaldes','vehical_type','vehical_brand','fueltype','color','editid','colors1','images1','model_name','tbl_custom_fields', 'branchDatas'));
-	 }	
-	 
+	 }
+
     // vehical Update
 	public function updatevehical($id, Request $request)
 	{
-		
-	  	/*$this->validate($request, [  
+
+	  	/*$this->validate($request, [
          	'price' => 'numeric',
 	    ]);*/
 
@@ -435,8 +437,8 @@ class VehicalControler extends Controller
       	$vehicabrand = $request->vehicabrand;
       	$modelyear = $request->modelyear;
        	$fueltype = $request->fueltype;
-       	$modelname = $request->modelname;  
-       	$price = $request->price;   
+       	$modelname = $request->modelname;
+       	$price = $request->price;
         $odometerreading = $request->odometerreading;
         $gearbox = $request->gearbox;
         $gearboxno = $request->gearboxno;
@@ -484,34 +486,34 @@ class VehicalControler extends Controller
         //Custom Field Data
 		//$custom=Input::get('custom');
 		$custom = $request->custom;
-		$custom_fileld_value = array();	
+		$custom_fileld_value = array();
 		$custom_fileld_value_jason_array = array();
 		if(!empty($custom))
 		{
 			foreach($custom as $key=>$value)
 			{
-				if (is_array($value)) 
+				if (is_array($value))
 				{
 					$add_one_in = implode(",",$value);
-					$custom_fileld_value[] = array("id" => "$key", "value" => "$add_one_in");					
+					$custom_fileld_value[] = array("id" => "$key", "value" => "$add_one_in");
 				}
 				else
 				{
-					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");	
-				}				
-			}	
-		   
-			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value); 
+					$custom_fileld_value[] = array("id" => "$key", "value" => "$value");
+				}
+			}
+
+			$custom_fileld_value_jason_array['custom_fileld_value'] = json_encode($custom_fileld_value);
 
 			foreach($custom_fileld_value_jason_array as $key1 => $val1)
 			{
 				$vehicleData = $val1;
-			}	
+			}
 			$vehical->custom_field = $vehicleData;
 		}
 
         $vehical->save();
-		
+
    		//$colores = Input::get('color');
    		$colores = $request->color;
 		$tbl_vehicale_colors = DB::table('tbl_vehicle_colors')->where('vehicle_id','=',$id)->delete();
@@ -523,10 +525,10 @@ class VehicalControler extends Controller
 				$color1 = new tbl_vehicle_colors;
 				$color1->vehicle_id = $id;
 				$color1->color = $colorse;
-				$color1->save();  	 
+				$color1->save();
 			}
 		}
-		
+
 		//$files = Input::file('image');
 		$files = $request->image;
 		if(!empty($files))
@@ -538,23 +540,23 @@ class VehicalControler extends Controller
 				{
 					$filename = $file->getClientOriginalName();
 					$file->move(public_path().'/vehicle/', $file->getClientOriginalName());
-					$images = new tbl_vehicle_images; 
+					$images = new tbl_vehicle_images;
 					$images->vehicle_id = $id;
 					$images->image = $filename;
 					$images->save();
 				}
-				
+
 			}
 		}
 		else
 		{
 			//Nothing to do (solved by Mukesh Bug list row number 582 and 583)
-			/*$images = new tbl_vehicle_images; 
+			/*$images = new tbl_vehicle_images;
 			$images->vehicle_id = $id;
 			$images->image = "'avtar.png'";
-			$images->save();*/								
+			$images->save();*/
 		}
-		
+
         //$descriptionsdata = Input::get('description');
         $descriptionsdata = $request->description;
         $tbl_vehicle_discription_records = DB::table('tbl_vehicle_discription_records')->where('vehicle_id','=',$id)->delete();
@@ -580,7 +582,7 @@ class VehicalControler extends Controller
 		$get_mot_vehicle_inspection_data = null;
 		$answers_question_id_array = null;
 		$get_inspection_points_library_data = null;
-		
+
 		$view_id = $id;
 	 	/*$vehical=DB::table('tbl_vehicles')->where('id','=',$id)->first();*/
 	 	$vehical = Vehicle::where('id','=',$id)->first();
@@ -590,19 +592,19 @@ class VehicalControler extends Controller
 		{
 			foreach ($image as $images)
 			{
-				$image_name[] = URL::to('/public/vehicle/'.$images->image);						
+				$image_name[] = URL::to('/public/vehicle/'.$images->image);
 			}
 		}
 		else
 		{
-			$image_name[] = URL::to('/public/vehicle/avtar.png');			
+			$image_name[] = URL::to('/public/vehicle/avtar.png');
 		}
 		$available = json_encode($image_name);
 	 	$col = DB::table('tbl_vehicle_colors')->where('vehicle_id','=',$id)->get()->toArray();
-	 	
+
 	 	/*$services = DB::table('tbl_services')->orderBy('service_date','asc')->where([['job_no','like','J%'],['done_status','=',1],['vehicle_id',$id]])->get()->toArray();*/
 	 	$services = Service::orderBy('service_date','asc')->where([['job_no','like','J%'],['done_status','=',1],['vehicle_id',$id]])->get();
-	 	
+
 	 	$desription = DB::table('tbl_vehicle_discription_records')->where('vehicle_id','=',$id)->get()->toArray();
 
 
@@ -610,7 +612,7 @@ class VehicalControler extends Controller
 	 	/*$get_services_tbl_data = DB::table('tbl_services')->where('vehicle_id',$id)->orderBy('id','desc')->first();*/
 	 	$get_services_tbl_data = Service::where('vehicle_id',$id)->orderBy('id','desc')->first();
 
-	 	if ($get_services_tbl_data) 
+	 	if ($get_services_tbl_data)
 		{
 			$mot_test_status_yes_or_no = $get_services_tbl_data->mot_status;
 
@@ -623,12 +625,12 @@ class VehicalControler extends Controller
 
 		 		/*Get data of 'mot_vehicle_inspection_data' table with questions and answer_id */
 		 		if ($get_mot_vehicle_inspection_data = DB::table('mot_vehicle_inspection')->where('vehicle_id', '=', $id)->latest('created_at')->first()) {
-				
+
 					$json_data = $get_mot_vehicle_inspection_data->answer_question_id;
 					$answers_question_id_array = json_decode($json_data, true);
 					/*question and answer in array in key sorted*/
 					ksort( $answers_question_id_array );
-				}		
+				}
 
 				/*Get inspection_points_library for display MoT questions*/
 				$get_inspection_points_library_data = DB::select('select * from inspection_points_library');
@@ -643,17 +645,17 @@ class VehicalControler extends Controller
 			$answers_question_id_array = null;
 			$get_inspection_points_library_data = null;
 		}
-			 	
+
 		//Custom Field Data
 		$tbl_custom_fields = DB::table('tbl_custom_fields')->where([['form_name','=','vehicle'],['always_visable','=','yes']])->get()->toArray();
 		//$tbl_custom_fields = CustomField::where([['form_name','=','vehicle'],['always_visable','=','yes']])->get();
 
 
 	 	return view('/vehicle/view',compact('vehical','image','col','desription','available','view_id','services','mot_test_status_yes_or_no','get_vehicle_mot_test_reports_data','get_mot_vehicle_inspection_data','answers_question_id_array','get_inspection_points_library_data','tbl_custom_fields'));
-	
+
 	}
 
-	
+
 	//get description
 	public function getDescription(Request $request)
 	{
@@ -663,7 +665,7 @@ class VehicalControler extends Controller
 		$html = view('vehicle.newdescription')->with(compact('row_id','ids'))->render();
 		return response()->json(['success' => true, 'html' => $html]);
 	 }
-	
+
 	//delete description
 	public function deleteDescription(Request $request)
 	{
@@ -671,7 +673,7 @@ class VehicalControler extends Controller
 		$id = $request->description;
 		$description = DB::table('tbl_vehicle_discription_records')->where('id','=',$id)->delete();
 	}
-	
+
 	//get color
 	public function getcolor(Request $request)
 	{
@@ -679,11 +681,11 @@ class VehicalControler extends Controller
 		$color_id = $request->color_id;
 		$color = DB::table('tbl_colors')->get()->toArray();
 		$idc = $color_id+1;
-		
+
 		$html = view('vehicle.newcoloradd')->with(compact('color_id','color','idc'))->render();
-		return response()->json(['success' => true, 'html' => $html]);	
+		return response()->json(['success' => true, 'html' => $html]);
 	}
-	
+
 	//color delete
 	public function deletecolor(Request $request)
 	{
@@ -691,7 +693,7 @@ class VehicalControler extends Controller
 		$id = $request->color_id;
 		$color = DB::table('tbl_vehicle_colors')->where('id','=',$id)->delete();
 	}
-	
+
 	//get images
 	public function getImages(Request $request)
 	{
@@ -707,13 +709,13 @@ class VehicalControler extends Controller
 											<div class="dropify-infos">
 												<div class="dropify-infos-inner">
 													<p class="dropify-filename">
-														<span class="file-icon"></span> 
+														<span class="file-icon"></span>
 														<span class="dropify-filename-inner"></span>
 													</p>
 												</div>
 											</div>
-									</div>								
-									</td>							
+									</div>
+									</td>
 									<td>
 										<span class="trash_accounts" data-id="<?php echo $idi;?>"><i class="fa fa-trash"></i> Delete</span>
 									</td>
@@ -760,16 +762,50 @@ class VehicalControler extends Controller
 								}
 							})
 						});
-					
+
 					</script>
 		<?php
 	}
-	
+
 	//delete images
 	public function deleteImages(Request $request)
 	{
 		//$id=Input::get('delete_image');
 		$id = $request->delete_image;
 		$image = DB::table('tbl_vehicle_images')->where('id','=',$id)->delete();
+	}
+
+	public function customerRegistration()
+	{
+		$vehical_number = DB::table('tbl_vehicles')->where('soft_delete','=',0)->get()->toArray();
+		$vehical_type = DB::table('tbl_vehicle_types')->where('soft_delete','=',0)->get()->toArray();
+	    $vehical_brand = DB::table('tbl_vehicle_brands')->where('soft_delete','=',0)->get()->toArray();
+	    $fuel_type = DB::table('tbl_fuel_types')->where('soft_delete','=',0)->get()->toArray();
+	    $color = DB::table('tbl_colors')->where('soft_delete','=',0)->get()->toArray();
+	    $model_name = DB::table('tbl_model_names')->where('soft_delete','=',0)->get()->toArray();
+		$customer=DB::table('users')->where([['role','Customer'],['soft_delete',0]])->get()->toArray();
+		$tbl_custom_fields = DB::table('tbl_custom_fields')->where([['form_name','=','vehicle'],['always_visable','=','yes'],['soft_delete','=',0]])->get()->toArray();
+		$country = DB::table('tbl_countries')->get()->toArray();
+		$currentUser = User::where([['soft_delete',0],['id','=',Auth::User()->id]])->orderBy('id','DESC')->first();
+		$adminCurrentBranch = BranchSetting::where('id','=',1)->first();
+		if (isAdmin(Auth::User()->role_id)) {
+			$branchDatas = Branch::where('id', $adminCurrentBranch->branch_id)->get();
+		}
+		elseif (getUsersRole(Auth::user()->role_id) == 'Customer') {
+			$branchDatas = Branch::get();
+		}
+		else{
+			$branchDatas = Branch::where('id', $currentUser->branch_id)->get();
+		}
+
+		return view ('vehicle.customer_registration',compact('vehical_type','vehical_brand','fuel_type','color','model_name','tbl_custom_fields', 'branchDatas','vehical_number','customer','country'));
+	}
+
+	public function vehicalnumberplate(Request $request)
+	{
+		$id = $request->vehical_id;
+		$vehicleInfo = Vehicle::where('number_plate',$id)->first();
+
+
 	}
 }

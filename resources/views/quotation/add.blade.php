@@ -5,9 +5,9 @@
 .invalid-feedback{color:red;}
 </style>
 
-<!-- page content -->	
+<!-- page content -->
 	<div class="right_col" role="main">
-		
+
 		<div class="page-title">
 			  <div class="nav_menu">
 				<nav>
@@ -28,7 +28,7 @@
 				@endcan
 			</ul>
 		</div>
-			  
+
 		<div class="row">
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="x_panel">
@@ -36,7 +36,7 @@
 						<div class="panel panel-default">
 							<!-- <div class="panel-heading step titleup">{{ trans('app.Step - 1 : Add Service Details...')}}</div> -->
 								<form id="QuotationAdd-Form" method="post" action="{{ url('/quotation/store') }}" enctype="multipart/form-data"  class="form-horizontal upperform serviceAddForm" border="10">
-				   
+
 									<div class="form-group">
 										<div class="my-form-group">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Quotation Number')}} <label class="color-danger">*</label></label>
@@ -52,23 +52,26 @@
 												<option value="">{{ trans('app.Select Customer')}}</option>
 												@if(!empty($customer))
 													@foreach($customer as $customers)
-													<option value="{{$customers->id}}" >{{ getCustomerName($customers->id)}}</option>	
+													<option value="{{$customers->id}}" @php echo $vehicalInfo!="" && $vehicalInfo->customer_id==$customers->id ? 'selected' : ''  @endphp >{{ getCustomerName($customers->id)}}</option>
 													@endforeach
 												@endif
 												</select>
 											</div>
 											<div class="col-md-1 col-sm-1 col-xs-12 addremove customerAddRemove">
-												<button type="button" data-toggle="modal"     data-target="#mymodal" class="btn btn-default openmodel">{{ trans('app.Add')}}</button>
+												<button type="button" data-toggle="modal" data-target="#mymodal" class="btn btn-default openmodel">{{ trans('app.Add')}}</button>
 											</div>
 										</div>
 									</div>
-					  
+
 								    <div class="form-group" style="margin-top: 20px;">
 										<div class="my-form-group">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="last-name">{{ trans('app.Vehicle Name')}} <label class="color-danger">*</label></label>
 											<div class="col-md-3 col-sm-3 col-xs-12">
 												  <select  name="vehicalname" class="form-control modelnameappend" id="vhi" required>
 													<option value="">{{ trans('app.Select vehicle Name')}}</option>
+													@if($vehicalInfo!="")
+													<option value="{{$vehicalInfo->id}}" selected="selected">{{ $vehicalInfo->modelname}}</option>
+													@endif
 														<!-- Option comes from Controller -->
 												  </select>
 											 </div>
@@ -85,7 +88,7 @@
 											</div>
 										</div>
 									</div>
-					  
+
 									<div class="form-group" style="margin-top: 15px;">
 										<!-- <div class="">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="number_plate">{{ trans('app.Number Plate')}}</label>
@@ -101,13 +104,13 @@
 													<option value="">-- {{ trans('app.Select Assign To')}} --</option>
 													@if(!empty($employee))
 													@foreach($employee as $employees)
-													<option value="{{$employees->id}}">{{ $employees->name }}</option>	
+													<option value="{{$employees->id}}">{{ $employees->name }}</option>
 													@endforeach
 													@endif
 												</select>
 											</div>
 										</div> -->
-										
+
 										<div class="my-form-group">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Title')}}</label>
 											<div class="col-md-4 col-sm-4 col-xs-12">
@@ -115,18 +118,18 @@
 											</div>
 										</div>
 
-										<div class="my-form-group">	 
+										<div class="my-form-group">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Repair Category')}} <label class="color-danger">*</label></label>
 											<div class="col-md-4 col-sm-4 col-xs-12">
 												<select name="repair_cat"  class="form-control" required>
 													<option value="">{{ trans('app.-- Select Repair Category--')}}</option>
 													<option value="breakdown">{{ trans('app.Breakdown') }}</option>
-													<option value="booked vehicle">{{ trans('app.Booked Vehicle') }}</option>	
-													<option value="repeat job">{{ trans('app.Repeat Job') }}</option>	
-													<option value="customer waiting">{{ trans('app.Customer Waiting') }}</option>	
+													<option value="booked vehicle">{{ trans('app.Booked Vehicle') }}</option>
+													<option value="repeat job">{{ trans('app.Repeat Job') }}</option>
+													<option value="customer waiting">{{ trans('app.Customer Waiting') }}</option>
 												</select>
 											</div>
-										</div>										
+										</div>
 									</div>
 
 									<div class="form-group" style="margin-top: 15px;">								<div class="my-form-group">
@@ -149,14 +152,14 @@
 													 @endif
 												</div>
 											</div>
-										</div>										
+										</div>
 									</div>
-					  
+
 									<div class="form-group" style="margin-top: 15px;">
 										<div class="my-form-group">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="details">{{ trans('app.Details')}}</label>
 											<div class="col-md-4 col-sm-4 col-xs-12">
-												<textarea class="form-control" name="details" id="details" maxlength="100">{{ old('details')}}</textarea> 
+												<textarea class="form-control" name="details" id="details" maxlength="100">{{ old('details')}}</textarea>
 											</div>
 										</div>
 
@@ -184,17 +187,17 @@
 											<label class="control-label col-md-2 col-sm-2 col-xs-12 currency" for="washBayCharge">{{ trans('app.Wash Bay Charge')}} (<?php echo getCurrencySymbols(); ?>) <label class="color-danger">*</label></label>
 											<div class="col-md-4 col-sm-4 col-xs-12">
 												<input type="text"  id="washBayCharge_required" name="washBayCharge" class="form-control washbay_charge_textbox"  placeholder="{{ trans('app.Enter Wash Bay Charge')}}"  value="{{ old('washBayCharge') }}" maxlength="10">
-												
+
 												<span id="washbay_error_span" class="help-block error-help-block color-danger" style="display:none"></span>
 											</div>
-										</div> 
+										</div>
 									</div>
 								<!-- Wash Bay Feature -->
 
 
-									<div class="form-group" style="margin-top: 15px;">							
+									<div class="form-group" style="margin-top: 15px;">
 									<!-- Tax field start -->
-									@if(!empty($tax))							
+									@if(!empty($tax))
 										<div class="">
 											<label class="control-label col-md-2 col-sm-2 col-xs-12" for="cus_name">{{ trans('app.Tax') }}</label>
 											<div class="col-md-4 col-sm-4 col-xs-12">
@@ -203,9 +206,9 @@
 													@foreach($tax as $taxes)
 														<tr>
 															<td>
-																<input type="checkbox" id="tax" class="checkbox-inline check_tax sele_tax myCheckbox" name="Tax[]" value="<?php 
+																<input type="checkbox" id="tax" class="checkbox-inline check_tax sele_tax myCheckbox" name="Tax[]" value="<?php
 																echo $taxes->id;?>" taxrate="{{$taxes->tax}}" taxName="{{$taxes->taxname}}" style="height:20px; width:20px; margin-right:5px; position: relative; top: 6px; margin-bottom: 12px;" >
-																<?php 
+																<?php
 																echo $taxes->taxname.'&nbsp'.$taxes->tax; ?>%
 															</td>
 														</tr>
@@ -219,7 +222,7 @@
 
 										<div class="my-form-group">
 			                              	<label class="control-label col-md-2 col-sm-2 col-xs-12" for="branch">{{ trans('app.Branch')}} <label class="color-danger">*</label></label>
-			                              
+
 			                              	<div class="col-md-4 col-sm-4 col-xs-12">
 			                                	<select class="form-control  select_branch" name="branch">
 			                                  	@foreach ($branchDatas as $branchData)
@@ -229,7 +232,7 @@
 			                              	</div>
 		                            	</div>
 									</div>
-								
+
 
 						<!-- ************* MOT Module Starting ************* -->
 								<br/><br/>
@@ -285,20 +288,20 @@
 																		</div>
 																		<div id="collapse5" class="panel-collapse collapse">
 																			<div class="panel-body">
-																				
-																				
-													@php 
+
+
+													@php
 														$a = $b = '';
 														$count = count($inspection_points_library_data);
 														$count = $count/2;
-													@endphp	
-														
+													@endphp
+
 								@foreach($inspection_points_library_data as $key => $inspection_library)
-								
+
 											@if($inspection_library->inspection_type == 1)
-														
+
 															@if( $key % 2 != 1 )
-															<?php 
+															<?php
 																	$a .= "<tr>
 																		<td>$inspection_library->code</td>
 																		<td>$inspection_library->point</td>
@@ -309,10 +312,10 @@
 																    		<option value='r'>R</option>
 																    		<option value='na'>NA</option>
 																  		</select>
-																  		</td></tr>"; 
-																?>								
+																  		</td></tr>";
+																?>
 															@else
-																<?php 
+																<?php
 																	$b .= "<tr>
 																		<td>$inspection_library->code</td>
 																		<td>$inspection_library->point</td>
@@ -324,12 +327,12 @@
 																    	<option value='na'>NA</option>
 																  		</select>
 																  		</td>
-																  		</tr>"; 
+																  		</tr>";
 																?>
 															@endif
 											@endif
 									@endforeach
-																					
+
 																				<div class="col-md-6">
 																					<table class="table">
 																						<thead class="thead-dark">
@@ -354,8 +357,8 @@
 																						<?php echo $b; ?>
 																					</table>
 																				</div>
-									
-																				
+
+
 																			</div>
 																		</div>
 																	</div>
@@ -373,18 +376,18 @@
 																		</div>
 																		<div id="collapse6" class="panel-collapse collapse">
 																			<div class="panel-body">
-													@php 
+													@php
 														$a = $b = '';
 														$count = count($inspection_points_library_data);
 														$count = $count/2;
-													@endphp	
-														
+													@endphp
+
 								@foreach($inspection_points_library_data as $key => $inspection_library)
-										
+
 											@if($inspection_library->inspection_type == 2)
-														
+
 															@if( $key % 2 != 0 )
-																<?php 
+																<?php
 																	$a .= "<tr>
 																		<td>$inspection_library->code</td>
 																		<td>$inspection_library->point</td>
@@ -395,10 +398,10 @@
 																    		<option value='r'>R</option>
 																    		<option value='na'>NA</option>
 																  		</select>
-																  		</td></tr>"; 
-																?>								
+																  		</td></tr>";
+																?>
 															@else
-																<?php 
+																<?php
 																	$b .= "<tr>
 																		<td>$inspection_library->code</td>
 																		<td>$inspection_library->point</td>
@@ -410,7 +413,7 @@
 																    	<option value='na'>NA</option>
 																  		</select>
 																  		</td>
-																  		</tr>"; 
+																  		</tr>";
 																?>
 															@endif
 											@endif
@@ -464,7 +467,7 @@
 														</div>
 														<div id="collapse4" class="panel-collapse collapse">
 															<div class="panel-body">
-																
+
 																<table class="table">
 																	<thead class="thead-dark">
 																		<tr>
@@ -472,23 +475,23 @@
 																			<th><b>{{ trans('app.Inspection Details') }}</b></th>
 																			<th><b>{{ trans('app.Answer') }}</b></th>
 																		<tr>
-																	</thead>			
-																	
-											@foreach($inspection_points_library_data as $key => $value)	
+																	</thead>
+
+											@foreach($inspection_points_library_data as $key => $value)
 													<thead>
 														<tr style="display: none;" id="tr_{{$value->id}}">
-															<td id=""> 
-																{{ $value->id }} 
+															<td id="">
+																{{ $value->id }}
 															</td>
-															<td id=""> 
-																{{ $value->point }} 
+															<td id="">
+																{{ $value->point }}
 															</td>
 															<td id="row_{{$value->id}}" class="text-uppercase">  </td>
 														</tr>
 													</thead>
-											@endforeach			
+											@endforeach
 																</table>
-																
+
 															</div>
 														</div>
 													</div>
@@ -499,7 +502,7 @@
 										</div>
 									</div>
 								</div>
-							
+
 						<!-- ************* MOT Module Ending ************* -->
 
 
@@ -515,7 +518,7 @@
 											$subDivCount = 0;
 										?>
 										@foreach($tbl_custom_fields as $myCounts => $tbl_custom_field)
-										<?php 
+										<?php
 											if($tbl_custom_field->required == 'yes')
 											{
 												$required="required";
@@ -531,7 +534,7 @@
 											<div class="col-md-12 col-sm-6 col-xs-12">
 										@endif
 											<div class="form-group col-md-6 col-sm-6 col-xs-12 error_customfield_main_div_{{$myCounts}}">
-									
+
 												<label class="control-label col-md-4 col-sm-4 col-xs-12" for="account-no">{{$tbl_custom_field->label}} <label class="color-danger">{{$red}}</label></label>
 												<div class="col-md-8 col-sm-8 col-xs-12">
 												@if($tbl_custom_field->type == 'textarea')
@@ -539,7 +542,7 @@
 
 													<span id="common_error_span_{{$myCounts}}" class="help-block error-help-block color-danger" style="display: none"></span>
 												@elseif($tbl_custom_field->type == 'radio')
-													
+
 													<?php
 														$radioLabelArrayList = getRadiolabelsList($tbl_custom_field->id)
 													?>
@@ -547,11 +550,11 @@
 														<div style="margin-top: 5px;">
 														@foreach($radioLabelArrayList as $k => $val)
 														<label><input type="{{$tbl_custom_field->type}}"  name="custom[{{$tbl_custom_field->id}}]" value="{{$k}}" <?php if($k == 0) {echo "checked"; } ?>>{{$val}}</label> &nbsp;
-														@endforeach	
-														</div>								
+														@endforeach
+														</div>
 													@endif
 												@elseif($tbl_custom_field->type == 'checkbox')
-													
+
 													<?php
 														$checkboxLabelArrayList = getCheckboxLabelsList($tbl_custom_field->id);
 														$cnt = 0;
@@ -566,7 +569,7 @@
 														<span id="common_error_span_{{$myCounts}}" class="help-block error-help-block color-danger" style="display: none"></span>
 														</div>
 														<input type="hidden" name="checkboxCount" value="{{$cnt}}">
-													@endif											
+													@endif
 												@elseif($tbl_custom_field->type == 'textbox')
 													<input type="{{$tbl_custom_field->type}}"  name="custom[{{$tbl_custom_field->id}}]"  class="form-control textDate_{{$tbl_custom_field->id}} textdate_simple_class common_value_is_{{$myCounts}} common_simple_class" placeholder="{{ trans('app.Enter')}} {{$tbl_custom_field->label}}" maxlength="30" isRequire="{{$required}}" fieldNameIs="{{ $tbl_custom_field->label }}" rows_id="{{$myCounts}}" {{ $required }}>
 
@@ -584,16 +587,16 @@
 											</div>
 											@endif
 										@endforeach
-										<?php 
+										<?php
 											if ($subDivCount%2 != 0) {
 												echo "</div>";
 											}
-										?>				
+										?>
 									@endif
 							<!-- End Custom Field -->
-									
+
 									<input type="hidden" name="_token" value="{{csrf_token()}}">
-                     
+
 									<div class="form-group">
 										<div class="col-md-12 col-sm-12 col-xs-12 text-center">
 											<a class="btn btn-primary" href="{{ URL::previous() }}">{{ trans('app.Cancel')}}</a>
@@ -606,7 +609,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!--customer add model -->
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		  	<div class="modal-dialog modal-lg">
@@ -622,11 +625,11 @@
 							</div>
 						</div>
 				    </div>
-			  		
+
 			  		<div class="modal-body">
 						<div class="x_content">
 							<form id="formcustomer" action="" method="POST" name="formcustomer" enctype="multipart/form-data" data-parsley-validate class="form-horizontal form-label-left input_mask">
-								
+
 								<div class="col-md-12 col-xs-12 col-sm-12 space">
 									<h4><b>{{ trans('app.Personal Information')}}</b></h4>
 									<p class="col-md-12 col-xs-12 col-sm-12 ln_solid"></p>
@@ -635,7 +638,7 @@
 								<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 									<label class="control-label col-md-4 col-sm-4 col-xs-12" for="first-name">{{ trans('app.First Name') }} <label class="color-danger">*</label> </label>
 									<div class="col-md-8 col-sm-8 col-xs-12">
-									  <input type="text" id="firstname" name="firstname"  class="form-control"  
+									  <input type="text" id="firstname" name="firstname"  class="form-control"
 									  value="{{ old('firstname') }}" placeholder="{{ trans('app.Enter First Name')}}" maxlength="25"  required />
 									  <span class="color-danger" id="errorlfirstname"></span>
 									</div>
@@ -671,7 +674,7 @@
 									<div class="col-md-8 col-sm-8 col-xs-12 gender">
 										<input type="radio" class="gender" name="gender" value="0" checked>{{ trans('app.Male')}}
 										<input type="radio" class="gender" name="gender" value="1" > {{ trans('app.Female')}}
-								   
+
 									</div>
 								</div>
 
@@ -773,7 +776,7 @@
 									   	<span class="color-danger" id="errorladdress"></span>
 									</div>
 								</div>
-								
+
 								<input type="hidden" name="_token" value="{{ csrf_token()}}">
 								<div class="form-group col-md-12 col-sm-12 col-xs-12">
 									<div class="col-md-12 col-sm-12 col-xs-12 text-center">
@@ -782,7 +785,7 @@
 									</div>
 								</div>
 							</form>
-						</div>	
+						</div>
 			  		</div>
 			  		<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -817,7 +820,7 @@
 								<div class="">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Vehicle Type')}} <label class="color-danger">*</label></label>
 									<div class="col-md-3 col-sm-3 col-xs-12">
-										<select class="form-control select_vehicaltype" id="vehical_id1" name="vehical_id" 
+										<select class="form-control select_vehicaltype" id="vehical_id1" name="vehical_id"
 										 vehicalurl="{!! url('/vehicle/vehicaltypefrombrand') !!}" required>
 											<option value="">{{ trans('app.Select Vehicle Type')}}</option>
 										 	@if(!empty($vehical_type))
@@ -825,7 +828,7 @@
 													<option value="{{ $vehical_types->id }}">{{ $vehical_types->vehicle_type }}</option>
 												@endforeach
 											@endif
-									    </select> 
+									    </select>
 										<span class="color-danger" id="errorlvehical_id1"></span>
 									</div>
 									<div class="col-md-1 col-sm-1 col-xs-12 addremove">
@@ -848,7 +851,7 @@
 									<div class="col-md-3 col-sm-3 col-xs-12">
 										<select class="form-control   select_vehicalbrand" id="vehicabrand1" name="vehicabrand" >
 											<option value="">Select Vehical Brand</option>
-										 </select> 
+										 </select>
 										 <span class="color-danger">
 											<strong id="errorlvehicabrand1" ></strong>
 										</span>
@@ -878,11 +881,11 @@
 														<option value="{{ $fuel_types->id }}">{{ $fuel_types->fuel_type }}</option>
 													@endforeach
 												@endif
-										</select> 
+										</select>
 									</div>
 									<div class="col-md-1 col-sm-1 col-xs-12 addremove">
 										<button type="button" class="btn btn-default" data-target="#responsive-modal-fuel" data-toggle="modal">{{ trans('app.Add')}}</button>
-									</div>									
+									</div>
 								</div>
 
 								<div class="">
@@ -892,7 +895,7 @@
 									</div>
 								</div>
 							</div>
-						  
+
 							<div class="form-group">
 								<div class="">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="last-name">{{ trans('app.Model Name')}} <label class="color-danger">*</label></label>
@@ -959,7 +962,7 @@
 									</div>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<div class="">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Engine No')}}</label>
@@ -976,7 +979,7 @@
 									</div>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<div class="">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Key No')}} </label>
@@ -1003,7 +1006,7 @@
 
 								<div class="my-form-group">
 	                              	<label class="control-label col-md-2 col-sm-2 col-xs-12" for="branch">{{ trans('app.Branch')}} <label class="color-danger">*</label></label>
-	                              
+
 	                              	<div class="col-md-4 col-sm-4 col-xs-12">
 	                                	<select class="form-control  select_branch_vehicle" id="
 	                                	select_branch_vehicle" name="branch_vehicle">
@@ -1028,8 +1031,8 @@
 					</div>
 				</div>
 			</div>
-		</div>  
-		
+		</div>
+
 		<!-- Model Name -->
 					<div class="col-md-6">
 						<div id="responsive-modal-vehi-model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -1049,14 +1052,14 @@
 													</tr>
 												</thead>
 												<tbody>
-										
+
 													@if(!empty($model_name))
 													@foreach ($model_name as $model_names)
 													<tr class="mod-{{ $model_names->id }}" >
 													<td class="text-center ">{{ $model_names->model_name }}</td>
 													<td class="text-center">
-													
-													<button type="button" modelid="{{ $model_names->id }}" 
+
+													<button type="button" modelid="{{ $model_names->id }}"
 													deletemodel="{!! url('/vehicle/vehicle_model_delete') !!}" class="btn btn-danger btn-xs modeldeletes">X</button>
 													</td>
 													</tr>
@@ -1069,14 +1072,14 @@
 												<input type="text" class="form-control vehi_modal_name" name="model_name" id="model_name" placeholder="{{ trans('app.Enter Model Name')}}" maxlength="20" required />
 											</div>
 											<div class="col-md-4 form-group data_popup" style="margin-top:24px;">
-												
-												<button type="button" class="btn btn-success vehi_model_add"  
+
+												<button type="button" class="btn btn-success vehi_model_add"
 												modelurl="{!! url('/vehicle/vehicle_model_add') !!}">{{ trans('app.Submit')}}</button>
 											</div>
 										</form>
 									</div>
 								</div>
-							</div>	
+							</div>
 						</div>
 					</div>
 				<!-- End Model Name -->
@@ -1104,7 +1107,7 @@
 													<tr class="del-{{ $vehical_types->id }}">
 														<td class="text-center ">{{ $vehical_types->vehicle_type }}</td>
 														<td class="text-center">
-															<button type="button" vehicletypeid="{{ $vehical_types->id }}" 
+															<button type="button" vehicletypeid="{{ $vehical_types->id }}"
 															deletevehical="{!! url('/vehicle/vehicaltypedelete') !!}" class="btn btn-danger btn-xs deletevehicletype">X</button>
 														</td>
 													</tr>
@@ -1117,18 +1120,18 @@
 												<input type="text" class="form-control vehical_type" name="vehical_type" id="vehical_type" placeholder="{{ trans('app.Enter Vehicle Type')}}" maxlength="20" required />
 											</div>
 											<div class="col-md-4 form-group data_popup" style="margin-top:24px;">
-												
-												<button type="button" class="btn btn-success vehicaltypeadd" 
+
+												<button type="button" class="btn btn-success vehicaltypeadd"
 												url="{!! url('/vehicle/vehicle_type_add') !!}" >{{ trans('app.Submit')}}</button>
 											</div>
 										</form>
 									</div>
 								</div>
-							</div>	
+							</div>
 						</div>
 					</div>
 				<!-- End  Vehicle Type  -->
-			
+
 				<!-- Vehicle Brand -->
 					<div class="col-md-6">
 						<div id="responsive-modal-brand" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -1153,8 +1156,8 @@
 													<tr class="del-{{ $vehical_brands->id}}" >
 													<td class="text-center ">{{ $vehical_brands->vehicle_brand }}</td>
 													<td class="text-center">
-													
-													<button type="button" brandid="{{ $vehical_brands->id }}" 
+
+													<button type="button" brandid="{{ $vehical_brands->id }}"
 													deletevehicalbrand="{!! url('/vehicle/vehicalbranddelete') !!}" class="btn btn-danger btn-xs deletevehiclebrands">X</button>
 													</td>
 													</tr>
@@ -1171,15 +1174,15 @@
 																<option value="{{ $vehical_types->id }}">{{ $vehical_types->vehicle_type }}</option>
 															@endforeach
 														@endif
-												</select> 
+												</select>
 											</div>
 											<div class="col-md-8 form-group data_popup">
 												<label>{{ trans('app.Vehicle Brand:')}} <span class="text-danger">*</span></label>
 												<input type="text" class="form-control vehical_brand" name="vehical_brand" id="vehical_brand" placeholder="{{ trans('app.Enter Vehicle brand')}}" maxlength="25" required />
 											</div>
 											<div class="col-md-4 form-group data_popup" style="margin-top:24px;">
-												
-												<button type="button" class="btn btn-success vehicalbrandadd" 
+
+												<button type="button" class="btn btn-success vehicalbrandadd"
 												   vehiclebrandurl="{!! url('/vehicle/vehicle_brand_add') !!}">{{ trans('app.Submit')}}</button>
 											</div>
 										</form>
@@ -1188,8 +1191,8 @@
 							</div>
 						</div>
 					</div>
-				<!-- End Vehicle Brand -->	
-				<!-- Fuel Type -->	
+				<!-- End Vehicle Brand -->
+				<!-- Fuel Type -->
 					<div class="col-md-6">
 						<div id="responsive-modal-fuel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
 							<div class="modal-dialog">
@@ -1213,8 +1216,8 @@
 													<tr class="del-{{ $fuel_types->id }} data_of_type" >
 													<td class="text-center ">{{ $fuel_types->fuel_type }}</td>
 													<td class="text-center">
-													
-													<button type="button" fuelid="{{ $fuel_types->id }}" 
+
+													<button type="button" fuelid="{{ $fuel_types->id }}"
 													deletefuel="{!! url('/vehicle/fueltypedelete') !!}" class="btn btn-danger btn-xs fueldeletes">X</button>
 													</td>
 													</tr>
@@ -1227,17 +1230,17 @@
 												<input type="text" class="form-control fuel_type" name="fuel_type" id="fuel_type" placeholder="{{ trans('app.Enter Fuel Type')}}" maxlength="20" required />
 											</div>
 											<div class="col-md-4 form-group data_popup" style="margin-top:24px;">
-												
-												<button type="button" class="btn btn-success fueltypeadd"  
+
+												<button type="button" class="btn btn-success fueltypeadd"
 												fuelurl="{!! url('/vehicle/vehicle_fuel_add') !!}">{{ trans('app.Submit')}}</button>
 											</div>
 										</form>
 									</div>
 								</div>
-							</div>	
+							</div>
 						</div>
 					</div>
-				<!-- end Fuel Type -->       
+				<!-- end Fuel Type -->
 	</div>
 <!-- /page content -->
 
@@ -1249,13 +1252,13 @@
 
 <script>
 $(document).ready(function()
-{	
+{
 
 	/*customer add*/
 	$('body').on('click','.openmodel',function(){
-		$('#myModal').modal();		
+		$('#myModal').modal();
 	});
-	
+
 	var msg100 = "{{ trans('app.An error occurred :')}}";
 
     $("#formcustomer").on('submit',(function(event) {
@@ -1282,11 +1285,11 @@ $(document).ready(function()
 			name_pattern2: /^[a-zA-Z\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/,
 			company_patt:/^[a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/,
 			lenghtLimit:/^[0-9]{6,16}$/,
-			mobile_pattern:/^[- +()]*[0-9][- +()0-9]*$/,				
+			mobile_pattern:/^[- +()]*[0-9][- +()0-9]*$/,
 			email_pattern:/^([a-zA-Z0-9_\.\-\+\'])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
 			};
 		}
-	 
+
 		event.preventDefault();
 		var call_var_customeradd = define_variable();
 		var errro_msg = [];
@@ -1303,7 +1306,7 @@ $(document).ready(function()
 			$('#errorlfirstname').html("");
 			errro_msg = [];
 		}
-		
+
 		if (!call_var_customeradd.name_pattern.test(call_var_customeradd.firstname))
 		{
 			var msg = "{{ trans('app.First name is only alphabets and space.')}}";
@@ -1317,9 +1320,9 @@ $(document).ready(function()
 			$('#errorlfirstname').html("");
 			errro_msg = [];
 		}
-		
+
 		if(!call_var_customeradd.firstname.replace(/\s/g, '').length){
-        	
+
         	var msg = "{{ trans('app.Only blank space not allowed')}}";
         	$("#firstname").val("");
 			$('#errorlfirstname').html(msg);
@@ -1370,7 +1373,7 @@ $(document).ready(function()
 			$('#errorllastname').html("");
 			errro_msg = [];
 		}
-		
+
 		if(!call_var_customeradd.lastname.replace(/\s/g, '').length){
 
 			var msg = "{{ trans('app.Only blank space not allowed')}}";
@@ -1464,7 +1467,7 @@ $(document).ready(function()
 				$('#errorlcompanyName').html(msg);
 				errro_msg.push(msg);
 				return false;
-			}	        
+			}
 			else
 			{
 				$('#errorlcompanyName').html("");
@@ -1476,7 +1479,7 @@ $(document).ready(function()
 			$('#errorlcompanyName').html("");
 			errro_msg = [];
 		}
-		
+
 		//Date of birth
 		/*if(call_var_customeradd.datepicker == "")
 		{
@@ -1490,8 +1493,8 @@ $(document).ready(function()
 			$('#errorldatepicker').html("");
 			errro_msg = [];
 		}*/
-	    
-		//Email 
+
+		//Email
 		if(call_var_customeradd.email == "")
 		{
 			var msg = "{{ trans('app.Email is required.')}}";
@@ -1530,9 +1533,9 @@ $(document).ready(function()
 			$('#errorlemail').html("");
 			errro_msg = [];
 		}
-		
 
-		//Password 
+
+		//Password
 		if(call_var_customeradd.password == "")
 		{
 			var msg = "{{ trans('app.Password is required.')}}";
@@ -1545,7 +1548,7 @@ $(document).ready(function()
 			$('#errorlpassword').html("");
 			errro_msg = [];
 		}
-		//Confirm Password 
+		//Confirm Password
 		if(call_var_customeradd.password_confirmation == "")
 		{
 			var msg = "{{ trans('app.Confirm password is required.')}}";
@@ -1558,8 +1561,8 @@ $(document).ready(function()
 			$('#errorlpassword_confirmation').html("");
 			errro_msg = [];
 		}
-		
-		//same Password and password_confirmation  
+
+		//same Password and password_confirmation
 		if(call_var_customeradd.password != call_var_customeradd.password_confirmation)
 		{
 			var msg = "{{ trans('app.Password and Confirm Password does not match.')}}";
@@ -1573,7 +1576,7 @@ $(document).ready(function()
 			errro_msg = [];
 		}
 
-		//Mobile number 
+		//Mobile number
 		if(call_var_customeradd.mobile == "")
 		{
 			var msg = "{{ trans('app.Contact number is required.')}}";
@@ -1613,12 +1616,12 @@ $(document).ready(function()
 			$('#errorlmobile').html("");
 			errro_msg = [];
 		}
-		
+
 		//LandLine number
 		if(call_var_customeradd.landlineno != "")
 		{
 			if (!call_var_customeradd.mobile_pattern.test(call_var_customeradd.landlineno))
-			{				
+			{
 				var msg = "{{ trans('app.Landline number must be number, plus, minus and space only.')}}";
 				$("#landlineno").val("");
 				$('#errorllandlineno').html(msg);
@@ -1652,7 +1655,7 @@ $(document).ready(function()
 			errro_msg = [];
 		}
 
-		//Country 
+		//Country
 		if(call_var_customeradd.country_id == "")
 		{
 			var msg = "{{ trans('app.Country field is required.')}}";
@@ -1665,7 +1668,7 @@ $(document).ready(function()
 			$('#errorlcountry_id').html("");
 			errro_msg = [];
 		}
-		//Address 
+		//Address
 		if(call_var_customeradd.address == "")
 		{
 			var msg = "{{ trans('app.Address field is required.')}}";
@@ -1691,9 +1694,9 @@ $(document).ready(function()
 			$('#errorladdress').html("");
 			errro_msg = [];
 		}
-		
+
 		if(errro_msg =="")
-		{			
+		{
 		   	var firstname =$('#firstname').val();
 		   	var lastname =$('#lastname').val();
 		   	var displayname =$('#displayname').val();
@@ -1709,16 +1712,16 @@ $(document).ready(function()
 		   	var state_id  = $( "#state_id option:selected" ).val();
 		   	var city  = $( "#city option:selected" ).val();
 		   	var address  = $( "#address" ).val();
-		  
+
 		   	$.ajax({
 			   	type: 'POST',
 			   	url: '{!!url('service/customeradd')!!}',
-			    data: new FormData(this), 
+			    data: new FormData(this),
 				headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') },
-				contentType: false,       
-				cache: false,             
-				processData:false, 
-				
+				contentType: false,
+				cache: false,
+				processData:false,
+
 			   	success:function(data)
 			   	{
 			   		$('.select_vhi').append('<option value='+data['customerId']+'>'+data['customer_fullname']+'</option>');
@@ -1748,12 +1751,12 @@ $(document).ready(function()
 			    error: function(e) {
                  	alert(msg100 + " " + e.responseText);
                     console.log(e);
-                }	  			   
-		   });			
-		}	
+                }
+		   });
+		}
 	}));
 
-	
+
 	/*customer model state to city*/
 	$('.select_country').change(function(){
 		countryid = $(this).val();
@@ -1767,11 +1770,11 @@ $(document).ready(function()
 			}
 		});
 	});
-	
+
 
 	$('body').on('change','.state_of_country',function(){
 		stateid = $(this).val();
-		
+
 		var url = $(this).attr('stateurl');
 		$.ajax({
 			type:'GET',
@@ -1799,30 +1802,30 @@ $(document).ready(function()
 			}
 		});
 	});
-	
+
 	/*images show in multiple in for loop*/
     $(".imageclass").click(function(){
         $(".classimage").empty();
     });
 
 
-	function preview_images() 
+	function preview_images()
 	{
 	 	var total_file=document.getElementById("images").files.length;
-	 
+
 	 	for(var i=0;i<total_file;i++)
 	 	{
-		 
+
 	  	$('#image_preview').append("<div class='col-md-3 col-sm-3 col-xs-12' style='padding:5px;'><img class='uploadImage' src='"+URL.createObjectURL(event.target.files[i])+"' width='100px' height='60px'> </div>");
 	 	}
 	}
-		
+
 
 	var msg100 = "{{ trans('app.An error occurred :')}}";
 
 	/*vehicle add*/
 	$('body').on('click','.addvehicleservice',function(event){
-	
+
 		function define_variable()
 		{
 			return {
@@ -1964,16 +1967,16 @@ $(document).ready(function()
 			var numberPlate =$('#number_plate').val();
 			var customer_id =$('.hidden_customer_id').val();
 			var branch_id_vehicle = $('.select_branch_vehicle').val();
-			
+
 			$.ajax({
-				
+
 				type:'get',
 				url:'{!! url('/service/vehicleadd')!!}',
 				data:{vehical_id1:vehical_id1,chasicno1:chasicno1,vehicabrand1:vehicabrand1,modelyear1:modelyear1,fueltype1:fueltype1,gearno1:gearno1,modelname1:modelname1,price1:price1,odometerreading1:odometerreading1,dom1:dom1,gearbox1:gearbox1,gearboxno1:gearboxno1,engineno1:engineno1,enginesize1:enginesize1,keyno1:keyno1,engine1:engine1,numberPlate:numberPlate,customer_id:customer_id,branch_id_vehicle:branch_id_vehicle},
 				success: function(data){
-					
+
 					var modelname1 =$('#modelname1').val();
-					
+
 					$('.modelnameappend').append('<option value='+data+'>'+modelname1+'</option>');
 					var vehical_id1 =$('#vehical_id1').val('');
 					var chasicno1 =$('#chasicno1').val('');
@@ -1993,8 +1996,8 @@ $(document).ready(function()
 					var engine1 =$('#engine1').val('');
 					var number_plate =$('#number_plate').val('');
 					$(".addvehiclemsg").removeClass("hide");
-					
-				   
+
+
 				},
 				error: function(e){
 					alert(msg31 + " " + e.responseText);
@@ -2014,8 +2017,8 @@ $(document).ready(function()
 	{
 		var model_name = $('.vehi_modal_name').val();
 		var model_url = $(this).attr('modelurl');
-		
-		var msg9 = "{{ trans('app.Please enter model name')}}";		
+
+		var msg9 = "{{ trans('app.Please enter model name')}}";
 
 		function define_variable()
 		{
@@ -2025,8 +2028,8 @@ $(document).ready(function()
 				vehicle_model_pattern2: /^[a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/
 			};
 		}
-	
-		var call_var_vehiclemodeladd = define_variable();		 
+
+		var call_var_vehiclemodeladd = define_variable();
 
         if(model_name == ""){
         	swal(msg9);
@@ -2047,15 +2050,15 @@ $(document).ready(function()
 		}
 		else{
 			$.ajax({
-					
+
 				type:'GET',
 				url:model_url,
 				data:{model_name:model_name},
-				
+
 				success:function(data)
-				{						
+				{
 					var newd = $.trim(data);
-					var classname = 'mod-'+newd;									
+					var classname = 'mod-'+newd;
 				if(newd == '01')
 				{
 					swal(msg12);
@@ -2073,9 +2076,9 @@ $(document).ready(function()
 
 
 
-		
+
 	$('body').on('click','.modeldeletes',function()
-	{		
+	{
 		var mod_del_id = $(this).attr('modelid');
 		var del_url = $(this).attr('deletemodel');
 
@@ -2090,13 +2093,13 @@ $(document).ready(function()
 
 		swal({
 			title: msg1,
-            text: msg2,   
-            type: "warning",   
-            showCancelButton: true, 
-            cancelButtonText: msg3, 
+            text: msg2,
+            type: "warning",
+            showCancelButton: true,
+            cancelButtonText: msg3,
             cancelButtonColor: "#C1C1C1",
-            confirmButtonColor: "#297FCA",   
-            confirmButtonText: msg4,   
+            confirmButtonColor: "#297FCA",
+            confirmButtonText: msg4,
             closeOnConfirm: false
 		},
 		function(isConfirm)
@@ -2115,15 +2118,15 @@ $(document).ready(function()
 				});
 			}else{
 				swal(msg7, msg8, "error");
-			} 
+			}
 		})
-	});	
+	});
 
 
 	/*vehicle type*/
 	$('.vehicaltypeadd').click(function()
 	{
-			
+
 		var vehical_type= $('.vehical_type').val();
 		var url = $(this).attr('url');
 
@@ -2140,8 +2143,8 @@ $(document).ready(function()
 				vehicle_type_pattern2: /^[a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/
 			};
 		}
-	
-		var call_var_vehicletypeadd = define_variable();		 
+
+		var call_var_vehicletypeadd = define_variable();
 
         if(vehical_type == ""){
             swal(msg13);
@@ -2161,7 +2164,7 @@ $(document).ready(function()
 			swal(msg34);
 		}
         else
-        { 
+        {
 			$.ajax({
 				type:'GET',
 				url:url,
@@ -2170,7 +2173,7 @@ $(document).ready(function()
 			   	{
 			   		var newd = $.trim(data);
 			   		var classname = 'del-'+newd;
-				  	
+
 				  	if (newd == '01')
 				   	{
 					   	swal(msg16);
@@ -2178,15 +2181,15 @@ $(document).ready(function()
 				   	else
 				   	{
 				   		$('.vehical_type_class').append('<tr class="'+classname+'"><td class="text-center">'+vehical_type+'</td><td class="text-center"><button type="button" vehicletypeid='+data+' deletevehical="{!! url('/vehicle/vehicaltypedelete') !!}" class="btn btn-danger btn-xs deletevehicletype">X</button></a></td><tr>');
-				   
+
 						$('.select_vehicaltype').append('<option value='+data+'>'+vehical_type+'</option>');
-						
+
 						$('.vehical_type').val('');
-					
+
 					 	$('.vehical_id').append('<option value='+data+'>'+vehical_type+'</option>');
-						
+
 						$('.vehical_type').val('');
-				   	}				   
+				   	}
 			   	},
 			});
 		}
@@ -2196,8 +2199,8 @@ $(document).ready(function()
 
 	/*vehical Type delete*/
 	$('body').on('click','.deletevehicletype',function(){
-		
-		var vtypeid = $(this).attr('vehicletypeid');		
+
+		var vtypeid = $(this).attr('vehicletypeid');
 		var url = $(this).attr('deletevehical');
 
 		var msg1 = "{{ trans('app.Are You Sure?')}}";
@@ -2208,7 +2211,7 @@ $(document).ready(function()
 	    var msg6 = "{{ trans('app.It was succesfully deleted!')}}";
 	    var msg7 = "{{ trans('app.Cancelled')}}";
 	    var msg8 = "{{ trans('app.Your data is safe')}}";
-		
+
 		swal({
 		    title: msg1,
             text: msg2,
@@ -2217,12 +2220,12 @@ $(document).ready(function()
             cancelButtonText: msg3,
             cancelButtonColor: "#C1C1C1",
             confirmButtonColor: "#297FCA",
-            confirmButtonText: msg4,  
+            confirmButtonText: msg4,
             closeOnConfirm: false
         },
         function(isConfirm)
         {
-			if (isConfirm) 
+			if (isConfirm)
 			{
 				$.ajax({
 					type:'GET',
@@ -2237,7 +2240,7 @@ $(document).ready(function()
 				});
 			}else{
 				swal(msg7, msg8, "error");
-			} 
+			}
 		})
 	});
 
@@ -2248,7 +2251,7 @@ $(document).ready(function()
         var vehical_id = $('.vehical_id').val();
 		var vehical_brand= $('.vehical_brand').val();
 		var url = $(this).attr('vehiclebrandurl');
-	
+
 		var msg17 = "{{ trans('app.Please first select vehicle type')}}";
 		var msg18 = "{{ trans('app.Please enter vehicle brand')}}";
 		var msg19 = "{{ trans('app.Please enter only alphanumeric data')}}";
@@ -2263,8 +2266,8 @@ $(document).ready(function()
 				vehicle_brand_pattern2: /^[a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/
 			};
 		}
-		
-		var call_var_vehiclebrandadd = define_variable();		
+
+		var call_var_vehiclebrandadd = define_variable();
 
 		if ($("#vehicleTypeSelect")[0].selectedIndex <= 0) {
 
@@ -2298,7 +2301,7 @@ $(document).ready(function()
 				   	url:url,
 				   	data :{vehical_id:vehical_id, vehical_brand:vehical_brand},
 				   	success:function(data)
-	               	{ 
+	               	{
 				       	var newd = $.trim(data);
 					   	var classname = 'del-'+newd;
 
@@ -2309,12 +2312,12 @@ $(document).ready(function()
 					   	else
 					   	{
 					   		$('.vehical_brand_class').append('<tr class="'+classname+'"><td class="text-center">'+vehical_brand+'</td><td class="text-center"><button type="button" brandid='+data+' deletevehicalbrand="{!! url('vehicle/vehicalbranddelete') !!}" class="btn btn-danger btn-xs deletevehiclebrands">X</button></a></td><tr>');
-							
+
 							$('.select_vehicalbrand').append('<option value='+data+'>'+vehical_brand+'</option>');
-							
+
 							$('.vehical_brand').val('');
-						}				     
-				   	},				 
+						}
+				   	},
 			 	});
 			}
 		}
@@ -2338,17 +2341,17 @@ $(document).ready(function()
 
 		swal({
             title: msg1,
-            text: msg2,   
-            type: "warning",   
-            showCancelButton: true, 
-            cancelButtonText: msg3, 
+            text: msg2,
+            type: "warning",
+            showCancelButton: true,
+            cancelButtonText: msg3,
             cancelButtonColor: "#C1C1C1",
-            confirmButtonColor: "#297FCA",   
-            confirmButtonText: msg4,   
+            confirmButtonColor: "#297FCA",
+            confirmButtonText: msg4,
             closeOnConfirm: false
         },
          function(isConfirm){
-			if (isConfirm) {  
+			if (isConfirm) {
 				$.ajax({
 					type:'GET',
 					url:url,
@@ -2361,7 +2364,7 @@ $(document).ready(function()
 				});
 			}else{
 				swal(msg7, msg8, "error");
-			} 
+			}
 		})
 	});
 
@@ -2399,7 +2402,7 @@ $(document).ready(function()
        format: "yyyy",
 		autoclose: 2,
 		minView: 4,
-		startView: 4,		
+		startView: 4,
     });
 
 
@@ -2421,54 +2424,54 @@ $(document).ready(function()
 	var msg2 = "{{ trans('app.Please select customer!')}}";
 
 	$('body').on('change','.select_vhi',function(){
-	
+
 		var url = $(this).attr('cus_url');
 		var cus_id = $(this).val();
 		var modelnms = $(this).val();
-	
+
 		$.ajax({
-			
+
 			type:'GET',
 			url:url,
 			data:{cus_id:cus_id,modelnms:modelnms},
 			success:function(response)
-			{	
-			   
+			{
+
 				$('.modelnms').remove();
 				$('#vhi').append(response);
 			}
-			
+
 		});
 	});
 
-		
+
 	$('body').on('click','#vhi',function(){
-	
+
 		var cus_id = $('.select_vhi').val();
-		
+
 		if(cus_id =="")
 		{
-			swal({   
+			swal({
 				title: msg1,
 				text: msg2
 
 				});
 				return false;
 		}
-	});	
+	});
 
 
 
 	/*If vehicle add when customer is selected otherwise not add vehicle*/
 	$('body').on('click','.vehiclemodel',function(){
-	
+
 		var cus_id = $('.select_vhi').val();
-		
+
 		if(cus_id == "")
 		{
-			swal({   
+			swal({
 					title: msg1,
-					text: msg2 
+					text: msg2
 				});
 			return false;
 		}
@@ -2479,15 +2482,15 @@ $(document).ready(function()
 
 
 	$('body').on('change','#vhi',function()
-	{	
+	{
 		var vehi_id =  $('.modelnms:selected').val();
 		var url = '{{ url('service/getregistrationno')}}';
-		$.ajax({			
+		$.ajax({
 			type:'GET',
 			url:url,
 			data:{vehi_id:vehi_id},
 			success:function(response)
-			{	
+			{
 				var res = $.trim(response);
 				if(res == "")
 				{
@@ -2495,12 +2498,12 @@ $(document).ready(function()
 					$('#reg_no').removeAttr('readonly');
 				}
 				else
-				{	
+				{
 					$('#reg_no').val(res);
 					$('#reg_no').attr('readonly',true);
 				}
-			}			
-		});		
+			}
+		});
 	});
 
 
@@ -2508,10 +2511,10 @@ $(document).ready(function()
 
 	/*Fuel type*/
 	$('.fueltypeadd').click(function(){
-			 
+
 		var fuel_type= $('.fuel_type').val();
 		var url = $(this).attr('fuelurl');
-        
+
         var msg21 = "{{ trans('app.Please enter fuel type')}}";
 		var msg22 = "{{ trans('app.Please enter only alphanumeric data')}}";
 		var msg23 = "{{ trans('app.Only blank space not allowed')}}";
@@ -2526,9 +2529,9 @@ $(document).ready(function()
 				vehicle_fuel_pattern2: /^[a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s]*$/
 			};
 		}
-		
+
 		var call_var_vehiclefueladd = define_variable();
-		
+
         if(fuel_type == ""){
             swal(msg21);
         }
@@ -2549,16 +2552,16 @@ $(document).ready(function()
 			swal(msg34);
 
 		}
-        else{  
+        else{
 			$.ajax({
 			   	type:'GET',
 			   	url:url,
 			   	data :{fuel_type:fuel_type},
 			   	success:function(data)
-			   	{				    
+			   	{
 			       	var newd = $.trim(data);
 				   	var classname = 'del-'+newd;
-				   
+
 				   	if(newd == '01')
 				   	{
 					   	swal(msg24);
@@ -2566,19 +2569,19 @@ $(document).ready(function()
 				   	else
 				   	{
 				    	$('.fuel_type_class').append('<tr class="'+classname+'"><td class="text-center">'+fuel_type+'</td><td class="text-center"><button type="button" fuelid='+data+' deletefuel="{!! url('/vehicle/fueltypedelete') !!}" class="btn btn-danger btn-xs fueldeletes">X</button></a></td><tr>');
-					
+
 						$('.select_fueltype').append('<option value='+data+'>'+fuel_type+'</option>');
-						
+
 						$('.fuel_type').val('');
-				   	}			     
-			   	},			   
+				   	}
+			   	},
 			});
 		}
 	});
-	
+
 	/*Using Slect2 make auto searchable dropdown*/
  	//var sendUrl = '{{ url('service/customer_autocomplete_search') }}';
-    
+
 	/*$('.select_customer_auto_search').select2({
     	ajax: {
         	url: sendUrl,
@@ -2616,13 +2619,13 @@ $(document).ready(function()
 			$(this).parent().parent().removeClass('has-error');
 		}
 	});
-	
+
 
 	/*If select box have value then error msg and has error class remove*/
 	$('#sup_id').on('change',function(){
 
 		var supplierValue = $('select[name=Customername]').val();
-		
+
 		if (supplierValue != null) {
 			$('#sup_id-error').css({"display":"none"});
 
@@ -2643,7 +2646,7 @@ $(document).ready(function()
 		i = i+1;
 		if(i%2!=0){
 			$(this).parent().find(".glyphicon-plus:first").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-				
+
 		}else{
 			$(this).parent().find(".glyphicon-minus:first").removeClass("glyphicon-minus").addClass("glyphicon-plus");
 		}
@@ -2661,7 +2664,7 @@ $(document).ready(function()
 	  	$('.pGroup').on('hidden.bs.collapse', toggleIcon);
 	  	$('.pGroup').on('shown.bs.collapse', toggleIcon);
 	});
-	
+
 	/*This for InsideCab and GroundLevelUnderVehicle Accordion*/
 	$(function() {
 	  	function toggleIcon(e) {
@@ -2672,7 +2675,7 @@ $(document).ready(function()
 	  	}
 	  	$('.pGroupInsideStep1').on('hidden.bs.collapse', toggleIcon);
 	  	$('.pGroupInsideStep1').on('shown.bs.collapse', toggleIcon);
-	});	
+	});
 
 
 
@@ -2691,7 +2694,7 @@ $(document).ready(function()
 		}
    	});
 
-	/*For display data from 'InsideCab  And Ground Level Under Vehicle' accordion to Step:2 Accordion*/	
+	/*For display data from 'InsideCab  And Ground Level Under Vehicle' accordion to Step:2 Accordion*/
 	$('.common').change(function(e) {
 
         var selectBoxValue = $(this,':selected').val();
@@ -2700,17 +2703,17 @@ $(document).ready(function()
         if (selectBoxValue == "r" || selectBoxValue == "x") {
         	$('#tr_'+id).css("display","");
         	$('#row_'+id).html(selectBoxValue);
-        } 
-        else 
+        }
+        else
         {
         	$('#tr_'+id).css("display","none");
         }
 	});
 
 
-	/*Inside fix service text box only enter numbers data*/	
+	/*Inside fix service text box only enter numbers data*/
 	$('.fixServiceCharge').on('keyup', function(){
-	 
+
 		var valueIs = $(this).val();
 
 	 	if (/\D/g.test(valueIs))
@@ -2796,7 +2799,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '.vehical_brand', function(){
 
       	var vehical_brandVal = $(this).val();
@@ -2805,7 +2808,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '.fuel_type', function(){
 
       	var fuel_typeVal = $(this).val();
@@ -2851,7 +2854,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '#odometerreading1', function(){
 
       	var odometerreading1 = $(this).val();
@@ -2860,7 +2863,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '#gearbox1', function(){
 
       	var gearbox1 = $(this).val();
@@ -2887,7 +2890,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '#enginesize1', function(){
 
       	var enginesize1 = $(this).val();
@@ -2896,7 +2899,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-    
+
     $('body').on('keyup', '#engine1', function(){
 
       	var engine1 = $(this).val();
@@ -2905,7 +2908,7 @@ $(document).ready(function()
          	$(this).val("");
       	}
    	});
-   	
+
    	$('body').on('keyup', '#keyno1', function(){
 
       	var keyno1 = $(this).val();
@@ -2954,38 +2957,38 @@ $(document).ready(function()
 		$('#QuotationAdd-Form input, #QuotationAdd-Form select, #QuotationAdd-Form textarea').each(
 
 		    function(index)
-		    {  
+		    {
 		        var input = $(this);
-		      
+
 		        if (input.attr('name') == "Customername" || input.attr('name') == "vehicalname" || input.attr('name') == "date" || input.attr('name') == "repair_cat" || input.attr('name') == "service_type") {
-		        	if (input.val() == "") 
+		        	if (input.val() == "")
 		        	{
 		        		return false;
-		        	}       	
+		        	}
 		        }
 		        else if (input.attr('isRequire') == 'required')
-		        {	
+		        {
 		        	var rowid = (input.attr('rows_id'));
 			        var labelName = (input.attr('fieldnameis'));
-		        	
-		        	if (input.attr('type') == 'textbox' || input.attr('type') == 'textarea') 
-			        {		  		  
-			        	if (input.val() == '' || input.val() == null) 
-			        	{		   	
+
+		        	if (input.attr('type') == 'textbox' || input.attr('type') == 'textarea')
+			        {
+			        	if (input.val() == '' || input.val() == null)
+			        	{
 			        		$('.common_value_is_'+rowid).val("");
 				    		$('#common_error_span_'+rowid).text(labelName + " : " + msg31);
 				    		$('#common_error_span_'+rowid).css({"display":""});
 							$('.error_customfield_main_div_'+rowid).addClass('has-error');
-			        		e.preventDefault();	
+			        		e.preventDefault();
 			        		return false;
 			        	}
-			        	else if (!input.val().replace(/\s/g, '').length) 
+			        	else if (!input.val().replace(/\s/g, '').length)
 			        	{
 				    		$('.common_value_is_'+rowid).val("");
 				    		$('#common_error_span_'+rowid).text(labelName + " : " + msg32);
 				    		$('#common_error_span_'+rowid).css({"display":""});
 							$('.error_customfield_main_div_'+rowid).addClass('has-error');
-			        		e.preventDefault();	
+			        		e.preventDefault();
 			        		return false;
 			        	}
 			        	else if(!input.val().match(/^[a-zA-Z\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F][a-zA-Z0-9\u0621-\u064A\u00C0-\u017F\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD\u0900-\u097F\s\.\-\_]*$/))
@@ -2994,11 +2997,11 @@ $(document).ready(function()
 				    		$('#common_error_span_'+rowid).text(labelName + " : " + msg33);
 				    		$('#common_error_span_'+rowid).css({"display":""});
 							$('.error_customfield_main_div_'+rowid).addClass('has-error');
-			        		e.preventDefault();	
+			        		e.preventDefault();
 			        		return false;
 			        	}
 			        }
-			        else if (input.attr('type') == 'checkbox') 
+			        else if (input.attr('type') == 'checkbox')
 			        {
 			        	var ids = input.attr('custm_isd');
 						if($(".required_checkbox_" + ids).is(':checked'))
@@ -3015,28 +3018,28 @@ $(document).ready(function()
 				    		$('.error_customfield_main_div_'+rowid).addClass('has-error');
 				    		$('.required_checkbox_'+ids).css({"outline":"2px solid #a94442"});
 				    		$('.required_checkbox_parent_div_'+ids).css({"color":"#a94442"});
-							e.preventDefault();	
+							e.preventDefault();
 							return false;
-						}		        	
+						}
 			        }
-			        else if (input.attr('type') == 'date') 
+			        else if (input.attr('type') == 'date')
 		    		{
-		    			if (input.val() == '' || input.val() == null) 
-			        	{	
+		    			if (input.val() == '' || input.val() == null)
+			        	{
 			        		$('.common_value_is_'+rowid).val("");
 				    		$('#common_error_span_'+rowid).text(labelName + " : " + msg31);
 				    		$('#common_error_span_'+rowid).css({"display":""});
 							$('.error_customfield_main_div_'+rowid).addClass('has-error');
-							e.preventDefault();	
+							e.preventDefault();
 				        	return false;
 			        	}
 			        	else
 			        	{
 			        		$('#common_error_span_'+rowid).css({"display":"none"});
-							$('.error_customfield_main_div_'+rowid).removeClass('has-error');	
+							$('.error_customfield_main_div_'+rowid).removeClass('has-error');
 			        	}
 			    	}
-		        } 
+		        }
 		        else if (input.attr('isRequire') == "")
 		        {
 		        	//Nothing to do
@@ -3049,16 +3052,16 @@ $(document).ready(function()
 		var washbay_trans = "{{ trans('app.Wash Bay Charge')}}";
 		var washbay_value = $('#washBayCharge_required').val();
 
-		if ($(".washBayCheckbox").is(':checked') == true) 
+		if ($(".washBayCheckbox").is(':checked') == true)
 		{
-			if (washbay_value == "") 
+			if (washbay_value == "")
 			{
 				//alert("is checked true : ");
 				$('#washBayCharge').addClass('has-error');
 				$('#washbay_error_span').text(washbay_trans + " " + msg31);
 				$('#washbay_error_span').css({"display":""});
 				e.preventDefault();
-			}			
+			}
 		}
 
 	});
@@ -3067,17 +3070,17 @@ $(document).ready(function()
 	/*Anykind of input time check for validation for Textbox, Date and Textarea*/
 	$('body').on('keyup','.common_simple_class',function(){
 
-		var rowid = $(this).attr('rows_id');		
+		var rowid = $(this).attr('rows_id');
         var valueIs = $('.common_value_is_'+rowid).val();
         var requireOrNot = $('.common_value_is_'+rowid).attr('isrequire');
         var labelName = $('.common_value_is_'+rowid).attr('fieldnameis');
         var inputTypes = $('.common_value_is_'+rowid).attr('type');
-		
-		if (requireOrNot != "") 
+
+		if (requireOrNot != "")
 		{
-			if (inputTypes != 'radio' && inputTypes != 'checkbox' && inputTypes != 'date') 
+			if (inputTypes != 'radio' && inputTypes != 'checkbox' && inputTypes != 'date')
 		    {
-		    	if (valueIs == "") 
+		    	if (valueIs == "")
 		    	{
 		    		$('.common_value_is_'+rowid).val("");
 		    		$('#common_error_span_'+rowid).text(labelName + " : " + msg31);
@@ -3106,7 +3109,7 @@ $(document).ready(function()
 		    }
 		    else if (inputTypes == 'date')
 		    {
-		    	if (valueIs != "") 
+		    	if (valueIs != "")
 		    	{
 					$('#common_error_span_'+rowid).css({"display":"none"});
 					$('.error_customfield_main_div_'+rowid).removeClass('has-error');
@@ -3116,7 +3119,7 @@ $(document).ready(function()
 		    		$('.common_value_is_'+rowid).val("");
 		    		$('#common_error_span_'+rowid).text(labelName + " : " + msg31);
 		    		$('#common_error_span_'+rowid).css({"display":""});
-					$('.error_customfield_main_div_'+rowid).addClass('has-error');		    		
+					$('.error_customfield_main_div_'+rowid).addClass('has-error');
 		    	}
 		    }
 		    else
@@ -3126,9 +3129,9 @@ $(document).ready(function()
 		}
 		else
 		{
-			if (inputTypes != 'radio' && inputTypes != 'checkbox' && inputTypes != 'date') 
+			if (inputTypes != 'radio' && inputTypes != 'checkbox' && inputTypes != 'date')
 		    {
-		    	if (valueIs != "") 
+		    	if (valueIs != "")
 		    	{
 		    		if (valueIs.match(/^\s+/))
 			    	{
@@ -3154,7 +3157,7 @@ $(document).ready(function()
 		    	{
 		    		$('#common_error_span_'+rowid).css({"display":"none"});
 					$('.error_customfield_main_div_'+rowid).removeClass('has-error');
-		    	}		    	
+		    	}
 		    }
 		}
 	});
@@ -3163,16 +3166,16 @@ $(document).ready(function()
 	/*For required checkbox checked or not*/
 	$('body').on('click','.checkbox_simple_class',function(){
 
-		var rowid = $(this).attr('rows_id');		
+		var rowid = $(this).attr('rows_id');
         var requireOrNot = $('.common_value_is_'+rowid).attr('isrequire');
         var labelName = $('.common_value_is_'+rowid).attr('fieldnameis');
         var inputTypes = $('.common_value_is_'+rowid).attr('type');
         var custId = $('.common_value_is_'+rowid).attr('custm_isd');
 
-		if (requireOrNot != "") 
+		if (requireOrNot != "")
 		{
 			if($(".required_checkbox_" + custId).is(':checked'))
-			{				
+			{
 				$('.required_checkbox_'+custId).css({"outline":""});
 				$('.required_checkbox_'+custId).css({"color":""});
 				$('#common_error_span_'+rowid).css({"display":"none"});
@@ -3193,7 +3196,7 @@ $(document).ready(function()
 
 
 	$('body').on('change','.date_simple_class',function(){
-		
+
 		var rowid = $(this).attr('rows_id');
 		var valueIs = $('.common_value_is_'+rowid).val();
         var requireOrNot = $('.common_value_is_'+rowid).attr('isrequire');
@@ -3201,9 +3204,9 @@ $(document).ready(function()
         var inputTypes = $('.common_value_is_'+rowid).attr('type');
         var custId = $('.common_value_is_'+rowid).attr('custm_isd');
 
-		if (requireOrNot != "") 
+		if (requireOrNot != "")
 		{
-			if (valueIs != "") 
+			if (valueIs != "")
 			{
 				$('#common_error_span_'+rowid).css({"display":"none"});
 				$('.error_customfield_main_div_'+rowid).removeClass('has-error');
@@ -3225,21 +3228,21 @@ $(document).ready(function()
     {
        	$("#washBayCharge").show();
        	$("#washBayCharge_required").attr('required', true);
-    } 
-    else 
+    }
+    else
     {
         $("#washBayCharge").hide();
 		$("#washBayCharge_required").removeAttr('required', false);
     }
 
 	$('.washBayCheckbox').click(function () {
-	
-		if ($("#washBay").is(":checked")) 
+
+		if ($("#washBay").is(":checked"))
     	{
         	$("#washBayCharge").show();
         	$("#washBayCharge_required").attr('required', true);
-        } 
-        else 
+        }
+        else
         {
            	$("#washBayCharge").hide();
 			$("#washBayCharge_required").removeAttr('required', false);
@@ -3248,12 +3251,12 @@ $(document).ready(function()
 
 
     $('body').on('keyup','.washbay_charge_textbox',function(){
-	
+
 		var washbayVal = $(this).val();
 		var numericDataWashbayMsg = "{{ trans('app.Only numeric data allowed.')}}";
 		var washbay_trans = "{{ trans('app.Wash Bay Charge')}}";
 
-		if (washbayVal != "") 
+		if (washbayVal != "")
     	{
         	if(!washbayVal.match(/^[1-9][0-9]*$/))
 	    	{
@@ -3267,8 +3270,8 @@ $(document).ready(function()
 				$('#washbay_error_span').css({"display":"none"});
 				$('#washBayCharge').removeClass('has-error');
 	    	}
-        } 
-        else 
+        }
+        else
         {
            	$('#washBayCharge').addClass('has-error');
 			$('#washbay_error_span').text(washbay_trans + " " + msg31);

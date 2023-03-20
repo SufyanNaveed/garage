@@ -41,9 +41,10 @@
 						@endcan
 
 						@can('customer_add')
-						 	<li role="presentation" class=""><a href="{!! url('/customer/add')!!}"><span class="visible-xs"></span><i class="fa fa-plus-circle fa-lg">&nbsp;</i> {{ trans('app.Add Customer') }}</a></li>
+						 	{{-- <li role="presentation" class=""><a href="{!! url('/customer/add')!!}"><span class="visible-xs"></span><i class="fa fa-plus-circle fa-lg">&nbsp;</i> {{ trans('app.Add Customer') }}</a></li> --}}
+						 	<li role="presentation" class=""><a href="{!! url('/vehicle/registration')!!}"><span class="visible-xs"></span><i class="fa fa-plus-circle fa-lg">&nbsp;</i>{{ trans('Customers Registration')}}</a></li>
 						@endcan
-					
+
 					</ul>
 				</div>
 				<div class="x_panel bgr">
@@ -70,11 +71,11 @@
 									<td>{{ $customers -> lastname}}</td>
 									<td>{{ $customers -> email }}</td>
 									<td>{{ $customers -> mobile_no }}</td>
-									<td> 
+									<td>
 										@can('customer_view')
 											<a href="{!! url('/customer/list/'.$customers->id) !!}"><button type="button" class="btn btn-round btn-info">{{ trans('app.View')}}</button></a>
 										@endcan
-										 
+
 										@can('customer_edit')
 											<a href="{!! url ('/customer/list/edit/'.$customers->id) !!}"> <button type="button" class="btn btn-round btn-success">{{ trans('app.Edit')}}</button></a>
 										@endcan
@@ -82,20 +83,20 @@
 										@can('customer_delete')
 											<a  url="{!! url('/customer/list/delete/'.$customers->id)!!}" class="deletecustomers"> <button type="button" class="btn btn-round btn-danger">{{ trans('app.Delete')}}</button></a>
 										@endcan
-									
+
 										@if(getUserRoleFromUserTable(Auth::User()->id) == 'Customer')
 											@if(!Gate::allows('customer_edit'))
 												@can('customer_owndata')
 													<a href="{!! url ('/customer/list/edit/'.$customers->id) !!}"> <button type="button" class="btn btn-round btn-success">{{ trans('app.Edit')}}</button></a>
 												@endcan
-											@endif	
+											@endif
 										@endif
 								    </td>
 								</tr>
 								<?php $i++; ?>
 							@endforeach
-						@endif  
-						
+						@endif
+
 						</tbody>
 					</table>
 				</div>
@@ -109,39 +110,39 @@
 <script src="{{ URL::asset('vendors/jquery/dist/jquery.min.js') }}"></script>
 
 <script>
-	$(document).ready(function() 
+	$(document).ready(function()
 	{
 	    $('#datatable').DataTable( {
 			responsive: true,
 	        "language": {
-				 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/<?php echo getLanguageChange(); 
+				 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/<?php echo getLanguageChange();
 				?>.json"
 	        }
 	    });
 
 
-		$('body').on('click', '.deletecustomers', function() 
-		{		  	
+		$('body').on('click', '.deletecustomers', function()
+		{
 		  	var url =$(this).attr('url');
 		  	var msg1 = "{{ trans('app.Are You Sure?')}}";
 		    var msg2 = "{{ trans('app.You will not be able to recover this data afterwards!')}}";
 		    var msg3 = "{{ trans('app.Cancel')}}";
 		    var msg4 = "{{ trans('app.Yes, delete!')}}";
-	        
+
 	        swal({
 	        	title: msg1,
-	            text: msg2,   
-	            type: "warning",   
-	            showCancelButton: true, 
-	            cancelButtonText: msg3, 
+	            text: msg2,
+	            type: "warning",
+	            showCancelButton: true,
+	            cancelButtonText: msg3,
 	            cancelButtonColor: "#C1C1C1",
-	            confirmButtonColor: "#297FCA",   
-	            confirmButtonText: msg4,   
+	            confirmButtonColor: "#297FCA",
+	            confirmButtonText: msg4,
 	            closeOnConfirm: false
 	        }, function(){
-				window.location.href = url;	             
+				window.location.href = url;
 	        });
-	    }); 
-  	}); 
+	    });
+  	});
 </script>
 @endsection
