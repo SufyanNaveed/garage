@@ -166,6 +166,22 @@ $customer= (isset($user)) ? $user->id : '' ;
 								</div>
 							</div>
 
+							<div class="col-md-12 col-xs-12 col-sm-12 space">
+								<h4><b>{{ trans('app.Vehicle Images')}}</b></h4>
+								<p class="col-md-12 col-xs-12 col-sm-12 ln_solid"></p>
+							</div>
+
+							<!-- Vehical images  -->
+							<div class="col-md-6 col-sm-12 col-xs-12 form-group my-form-group">
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
+								</div>
+								<div class="form-group col-md-10 col-sm-12 col-xs-12">
+									<input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />
+									<div class="row" id="image_preview"> </div>
+								</div>
+							</div>
+							
 							<div class="form-group col-md-12 col-sm-12 col-xs-12">
 								<div class="col-md-12 col-sm-12 col-xs-12 text-center">
 									<a class="btn btn-primary" href="{{ URL::previous() }}">{{ trans('app.Cancel')}}</a>

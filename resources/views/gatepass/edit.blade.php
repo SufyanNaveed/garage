@@ -29,9 +29,7 @@
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="x_panel">
 					<div class="x_content">
-						<form id="demo-form2" action="upadte/{{$gatepass->id}}" method="post" 
-						enctype="multipart/form-data" data-parsley-validate 
-									 class="form-horizontal form-label-left input_mask">
+						<form id="demo-form2" action="upadte/{{$gatepass->id}}" method="post" enctype="multipart/form-data" data-parsley-validate   class="form-horizontal form-label-left input_mask">
 									 
 							<input type="hidden" name="_token" value="{{csrf_token()}}">
 							
@@ -161,6 +159,33 @@
 								</div>
 							</div>
 
+							<div class="col-md-12 col-xs-12 col-sm-12 space">
+								<h4><b>{{ trans('app.Vehicle Images')}}</b></h4>
+								<p class="col-md-12 col-xs-12 col-sm-12 ln_solid"></p>
+							</div>
+
+							<!-- Vehical images  -->
+							<div class="col-md-6 col-sm-12 col-xs-12 form-group my-form-group">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
+									</div>
+										<div class="form-group col-md-10 col-sm-12 col-xs-12">
+											<input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />
+											
+											<div class="row" id="image_preview">
+												@if(!empty($images1))
+													@foreach($images1 as $images2)
+															<div class="col-md-4 col-sm-4 col-xs-12 removeimage delete_image" id="image_remove_<?php echo $images2->id; ?>"  imgaeid="{{$images2->id}}" delete_image="{!! url('gatepass/delete/getImages')!!}">
+																<a href=""><img src="{{ url('public/gatepass/'.$images2->image) }}"  width="100px" height="60px"> 
+																<p class="text">{{ trans('app.Remove')}}</p> </a>
+															</div>
+													@endforeach
+												@endif
+											</div>
+										</div>
+								<div class="row classimage" id="image_preview"></div>
+									
+							</div>
 							<div class="form-group col-md-12 col-sm-12 col-xs-12">
 								<div class="col-md-12 col-sm-12 col-xs-12 text-center">
 									<a class="btn btn-primary" href="{{ URL::previous() }}">{{ trans('app.Cancel')}}</a>
@@ -175,7 +200,21 @@
 		</div>
 	</div>
 <!-- /page content -->
-
+<style>
+	.removeimage{float:left;    padding: 5px; height: 70px;}
+	.removeimage .text {
+		position:relative;
+		bottom: 45px;
+		display:block;
+		left: 20px;
+		font-size:18px;
+		color:red;
+		visibility:hidden;
+	}
+	.removeimage:hover .text {
+		visibility:visible;
+	}
+</style>
 
 <!-- Scripts starting -->
 <script src="{{ URL::asset('build/js/jquery.min.js') }}"></script>
@@ -234,6 +273,69 @@ $(document).ready(function()
 			$(this).parent().parent().removeClass('has-error');
 		}
 	});
+
+
+	$(".imageclass").click(function(){
+        $(".classimage").empty();
+    });
+
+	function preview_images() 
+	{
+	 	var total_file=document.getElementById("images").files.length;
+	 
+	 	for(var i=0;i<total_file;i++)
+	 	{			 
+	  		$('#image_preview').append("<div class='col-md-3 col-sm-3 col-xs-12' style='padding:5px;'><img class='uploadImage' src='"+URL.createObjectURL(event.target.files[i])+"' width='100px' height='60px'> </div>");
+	 	}
+	}
+	
+
+	/*new image append*/
+	$("#add_new_images").click(function()
+	{
+		var image_id = $("#tab_images > tbody > tr").length;		
+		var url = $(this).attr('url');
+		var msg43 = "{{ trans('app.An error occurred :')}}";
+
+		$.ajax({
+            type: 'GET',
+            url: url,
+            data : {image_id:image_id},
+            success: function (response)
+            {
+            	$("#tab_images > tbody").append(response);
+            	return false;
+            },
+            error: function(e) {
+            	alert(msg43 + " " + e.responseText);
+            	console.log(e);
+            }
+       	});
+	});
+
+
+	$('body').on('click','.delete_image',function()
+	{
+	
+		var delete_image = $(this).attr('imgaeid');
+		var url = $(this).attr('delete_image');
+          
+		$.ajax({
+			type: 'GET',
+			url: url,
+			data : {delete_image:delete_image},
+			success: function (response)
+			{	
+				$('div#image_preview div#image_remove_'+delete_image).remove();
+			},
+			error: function(e) {
+				alert(msg100 + " " + e.responseText);
+				console.log(e);
+			}
+       	});
+		return false;
+	});
+
 });
 </script>
 

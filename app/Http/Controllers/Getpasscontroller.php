@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use DB;
+use URL;
 use Auth;
 
 use App\Http\Requests;
@@ -12,11 +13,13 @@ use Illuminate\Support\Facades\Gate;
 use App\User;
 use App\tbl_settings;
 use App\tbl_gatepasses;
+use App\tbl_gatepasses_images;
 
 use App\Gatepass;
 use App\Service;
 use App\Setting;
 use App\BranchSetting;
+
 use App\Http\Requests\StoreGatepassAddEditFormRequest;
 
 class Getpasscontroller extends Controller
@@ -157,6 +160,26 @@ class Getpasscontroller extends Controller
 		$gatepass->ser_pro_status = 1;
         $gatepass->create_by = Auth::user()->id;
 		$gatepass->save();
+
+		$gatepass = DB::table('tbl_gatepasses')->orderBy('id','desc')->first();
+   		$id = $gatepass->id;
+
+		$image = $request->image;
+		if(!empty($image))
+		{
+			$files = $image;
+
+			foreach($files as $file)
+			{
+				$filename = $file->getClientOriginalName();
+				$file->move(public_path().'/gatepass/', $file->getClientOriginalName());
+				$images = new tbl_gatepasses_images;
+				$images->gatepass_id = $id;
+				$images->image = $filename;
+				$images->save();
+			}
+		}
+
 		return redirect('/gatepass/list')->with('message','Successfully Submitted');
 	}
 	
@@ -201,7 +224,15 @@ class Getpasscontroller extends Controller
 									->where('tbl_gatepasses.id','=',$id)->first();
 			
 		
-		return view('gatepass.edit',compact('gatepass','jobno'));
+		$images1=DB::table('tbl_gatepasses_images')->where('gatepass_id','=',$id)->get()->toArray();
+		
+		return view('gatepass.edit',compact('gatepass','jobno','images1'));
+	}
+	
+	public function deleteImages(Request $request)
+	{
+		$id = $request->delete_image;
+		$image = DB::table('tbl_gatepasses_images')->where('id','=',$id)->delete();
 	}
 	
 	//gatepass update
@@ -233,6 +264,23 @@ class Getpasscontroller extends Controller
 		$gatepass->ser_pro_status = 1;
         $gatepass->create_by = Auth::user()->id;
 		$gatepass->save();
+
+
+		$image = $request->image;
+		if(!empty($image))
+		{
+			$files = $image;
+
+			foreach($files as $file)
+			{
+				$filename = $file->getClientOriginalName();
+				$file->move(public_path().'/gatepass/', $file->getClientOriginalName());
+				$images = new tbl_gatepasses_images;
+				$images->gatepass_id = $id;
+				$images->image = $filename;
+				$images->save();
+			}
+		}
 		return redirect('/gatepass/list')->with('message','Successfully Updated');
 	}
 	
@@ -247,10 +295,30 @@ class Getpasscontroller extends Controller
 						->join('tbl_services','tbl_gatepasses.jobcard_id','=','tbl_services.job_no')
 						->select('tbl_gatepasses.*','tbl_services.service_date','tbl_vehicles.modelname','users.name','users.lastname')
 						->where('jobcard_id',$getpassid)->first();
+						
+		$image = DB::table('tbl_gatepasses_images')->where('gatepass_id','=',$getpassdata->id)->get()->toArray();
+		if(!empty($image))
+		{
+			foreach ($image as $images)
+			{
+				$image_name[] = URL::to('/public/gatepass/'.$images->image);
+			}
+		}
+		else
+		{
+			$image_name[] = URL::to('/public/gatepass/avtar.png');
+		}
+		$available = json_encode($image_name);
 		
+		// $getpassimages = Gatepass::
+		// join('tbl_gatepasses_images','tbl_gatepasses_images.gatepass_id','=','tbl_gatepasses.id')
+		// ->select('image')
+		// ->where('gatepass_id',$getpassdata->id)->get();
+
+		//dd($getpassimages); exit;
 		$setting = Setting::first();
 						
-		$html = view('gatepass.getpassmodel')->with(compact('getpassid','getpassdata','setting'))->render();
+		$html = view('gatepass.getpassmodel')->with(compact('getpassid','getpassdata','setting','available'))->render();
 
 		return response()->json(['success' => true, 'html' => $html]);
 	}

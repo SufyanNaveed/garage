@@ -572,6 +572,7 @@ Route::group(['prefix'=>'gatepass'],function()
 	Route::post('/list/edit/upadte/{id}',['as'=>'/gatepass/list/edit/update','uses'=>'Getpasscontroller@upadte'])->middleware('can:gatepass_edit');
 	Route::get('/gatepassview',['as'=>'/gatepass//gatepassview','uses'=>'Getpasscontroller@gatepassview'])->middleware('can:gatepass_view');
 	Route::get('/gatedata',['as'=>'/gatepass/gatedata','uses'=>'Getpasscontroller@gatedata']);
+	Route::get('delete/getImages','Getpasscontroller@deleteImages');
 });
 
 //Observation Type  Module
