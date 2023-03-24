@@ -409,12 +409,21 @@ class JobCardcontroller extends Controller
 	public function Get_Observation_Pts(Request $request)
 	{
 		$s_id = $request->service_id;
+		$check_id = $request->check_id;
+		$i = $request->counter;
 		//$product = DB::table('tbl_products')->get()->toArray();
 		$product = DB::table('tbl_products')->where('soft_delete','=',0)->get()->toArray();
 		
-		$data = DB::select("select tbl_service_pros.*, tbl_points.*,tbl_service_observation_points.id from tbl_points join tbl_service_observation_points on tbl_service_observation_points.observation_points_id = tbl_points.id join tbl_service_pros on tbl_service_pros.tbl_service_observation_points_id = tbl_service_observation_points.id where tbl_service_observation_points.services_id = $s_id and tbl_service_observation_points.review = 1 and tbl_service_pros.type = 0");
-	
-		$html = view('jobcard.observationpoints')->with(compact('s_id','product','data'))->render();
+		$data = DB::select("select tbl_service_pros.*, tbl_points.*,tbl_service_observation_points.id 
+		from tbl_points 
+		join tbl_service_observation_points on tbl_service_observation_points.observation_points_id = tbl_points.id 
+		join tbl_service_pros on tbl_service_pros.tbl_service_observation_points_id = tbl_service_observation_points.id 
+		where tbl_service_observation_points.services_id = $s_id
+		and tbl_points.id = $check_id
+		and tbl_service_observation_points.observation_points_id = $check_id
+		and tbl_service_observation_points.review = 1 and tbl_service_pros.type = 0");
+		//dd($data);
+		$html = view('jobcard.observationpoints_append')->with(compact('i','s_id','product','data'))->render();
 		return response()->json(['success' => true, 'html' => $html]);
 	}
 	
@@ -857,8 +866,9 @@ class JobCardcontroller extends Controller
 						->join('tbl_purchases','tbl_purchase_history_records.purchase_id','=','tbl_purchases.id')
 						->where('tbl_products.id','=',$productid)
 						->where('tbl_stock_records.branch_id','=',$branchId)
+						->orderBy('tbl_purchase_history_records.created_at','desc')
 						->get()->toArray();
-				
+		//dd($stockdata[0]->price);
 		$fullstock = 0;
 		if(!empty($stockdata))
 		{
@@ -880,8 +890,14 @@ class JobCardcontroller extends Controller
 		else
 		{
 			$price = $request->price;
+			$last_purchase_price = $stockdata[0]->price;
 			$total = $qty * $price;
-			echo $total;
+			if($last_purchase_price > $price){
+				return response()->json(['total' => $total,'last_purchase_price' => $last_purchase_price ]);
+			}else{
+				return response()->json(['total' => $total,'last_purchase_price' => 0]);
+			}
+			//echo $total;
 		}
 				
 	}

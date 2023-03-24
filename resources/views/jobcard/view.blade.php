@@ -227,7 +227,7 @@
                      <h3>{{ trans('app.Observation List')}}</h3>
                   </div>
                   <div class="col-md-2 col-sm-4 col-xs-4" style="padding-top:8px;">
-                     <button type="button" data-target="#responsive-modal-observation" data-toggle="modal" class= "btn btn-default clickAddNewButton">{{    trans('app.Add New')}}</button>
+                     <button type="button" data-target="#responsive-modal-observation" data-toggle="modal" data-counter="1" class= "btn btn-default clickAddNewButton">{{    trans('app.Add New')}}</button>
                   </div>
                </div>
                <div class="col-md-12 col-xs-12 col-sm-12 panel-group">
@@ -290,7 +290,8 @@
                               <td>
                                  @if(!empty($products))
                                  <input type="text" name="product2[price][]" value="<?php if(!empty($data)){ echo $datas->price; } ?>" value="<?php echo $products->price; ?>" class="form-control prices rate product1_<?php echo $i; ?> product1_<?php echo $i; ?> price_<?php echo $i; ?>" id="product1_<?php echo $i; ?>" row_id="{{$i}}" maxlength="8" onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')">
-                                 @endif      
+                                 @endif
+                                 <span id="purchase_price_error_msg_<?php echo $i; ?>" style="color:red;"></span>      
                               </td>
                               
                               <td> 
@@ -299,7 +300,7 @@
                               </td>
                               
                               <td>
-                                 <input type="text" name="product2[total][]" value="<?php if(!empty($data)){ echo $datas->total_price; } ?>" value="0" class="form-control total1 total1_<?php echo $i; ?>" id="total1_<?php echo $i; ?>"  readonly="true"/>
+                                 <input type="text" name="product2[total][]" value="<?php if(!empty($data)){ echo $datas->total_price; } ?>" value="0" class="form-control total1 total1_<?php echo $i; ?>" id="total1_<?php echo $i; ?>"  readonly="true"/ required>
                               </td>
                                  
                               <td>
@@ -605,22 +606,31 @@ $(document).ready(function()
       
       var url = "<?php echo url('jobcard/get_obs') ?>";
       var service_id = $('.service_id').val();
+      var check_id = $('.check_pt:checked').attr('check_id');
+      var counter = $('.clickAddNewButton').attr('data-counter');
+      counter = parseInt(counter) + 1;
+
+
       $.ajax({
          headers: {
                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
          },
          type: 'post',
          url: url,
-         data : {service_id:service_id},
+         data : {service_id:service_id,counter:counter,check_id:check_id},
          success: function (response)
          {  
             /*var obj = JSON.parse(response);
             $('.main_data').html(obj.html);
             $('.modal').modal('hide');*/
                          
-            jQuery('.main_data').html(response.html);
+            // jQuery('.main_data').html(response.html);
+            jQuery('#tbd').append(response.html);
             jQuery('.modal').modal('hide');
-            window.location.reload();
+            if(response.html != ''){
+               $('.clickAddNewButton').attr('data-counter',counter);
+            }
+            //window.location.reload();
          },
          error: function(e) 
          {
@@ -1079,9 +1089,18 @@ $(document).ready(function()
                jQuery('.total1_'+row_id).val('');
             }
             else{                                     
-               jQuery('.total1_'+row_id).val(''); 
-               jQuery('.total1_'+row_id).val(response); 
-               jQuery('#product1s_'+row_id).attr('qtyappend',qty);                  
+               if(response.last_purchase_price > 0){
+                  jQuery('#total1_'+row_id).val('');
+                  $('#qty_'+row_id).val('');
+                  $('#product1_'+row_id).css('border','1px solid red');
+                  $('#purchase_price_error_msg_'+row_id).html('Enter price is less than Purchase price ('+ response.last_purchase_price +')');
+               }else{
+                  jQuery('.total1_'+row_id).val(''); 
+                  jQuery('.total1_'+row_id).val(response.total); 
+                  jQuery('#product1s_'+row_id).attr('qtyappend',qty);
+                  $('#product1_'+row_id).css('border','');
+                  $('#purchase_price_error_msg_'+row_id).html('')
+               }                
             }
          },
          beforeSend:function()

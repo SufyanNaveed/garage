@@ -261,7 +261,7 @@
 							<!-- Vehical images  -->
 								<div class="col-md-6 col-sm-12 col-xs-12 form-group my-form-group">
 									<div class="col-md-12 col-sm-12 col-xs-12">
-										<h2>{{ trans('app.Vehicle Images')}}</h2>
+										<h2>{{ trans('app.Vehicle Images')}} (Pre Service)</h2>
 											<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
 									</div>
 										<div class="form-group col-md-10 col-sm-12 col-xs-12">
