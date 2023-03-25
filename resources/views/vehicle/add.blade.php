@@ -1121,6 +1121,7 @@ $(document).ready(function()
 					{
 						$('.mod-'+mod_del_id).remove();
 						$(".model_addname option[value="+mod_del_id+"]").remove();
+						$('.model_addname').empty().append(data);
 						swal(msg5, msg6,"success");
 					}
 				});

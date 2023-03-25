@@ -43,8 +43,8 @@
 			<br/>
             <div class="col-md-7 col-sm-7 col-xs-12">
                
-               <div class="col-md-6 col-sm-12 col-xs-12 printimg">
-                  <img src="{{ URL('public/vehicle/service.png')}}" style="width: 225px; height: 90px;">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <!-- <img src="{{ URL('public/vehicle/service.png')}}" style="width: 225px; height: 90px;"> -->
                   <img src="{{ url::asset('public/general_setting/'.$logo->logo_image)}}" width="230px" height="70px" style="position: absolute; top: 10px; left: 0px;">
                </div>
                <div class="col-md-6 col-sm-12 col-xs-12">

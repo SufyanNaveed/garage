@@ -106,7 +106,7 @@ class VehicalControler extends Controller
 	{
 		$vehical_type = $request->vehical_type;
 
-		$count = DB::table('tbl_vehicle_types')->where('vehicle_type','=',$vehical_type)->count();
+		$count = DB::table('tbl_vehicle_types')->where('vehicle_type','=',$vehical_type)->where('soft_delete','=',0)->count();
 
 		if ($count==0){
 			$vehicaltype = new Vehicletype;
@@ -125,7 +125,7 @@ class VehicalControler extends Controller
         $vehical_id = $request->vehical_id;
 		$vehical_brand1 = $request->vehical_brand;
 
-		$count = DB::table('tbl_vehicle_brands')->where([['vehicle_id','=',$vehical_id],['vehicle_brand','=',$vehical_brand1]])->count();
+		$count = DB::table('tbl_vehicle_brands')->where([['vehicle_id','=',$vehical_id],['vehicle_brand','=',$vehical_brand1],['soft_delete','=',0]])->count();
 
 		if( $count == 0){
 			$vehical_brand = new Vehiclebrand;
@@ -144,7 +144,7 @@ class VehicalControler extends Controller
 	{
 		$fuel_type1 = $request->fuel_type;
 
-		$count =  DB::table('tbl_fuel_types')->where('fuel_type','=',$fuel_type1)->count();
+		$count =  DB::table('tbl_fuel_types')->where('fuel_type','=',$fuel_type1)->where('soft_delete','=',0)->count();
 		if($count == 0)
         {
 			$fueltype = new tbl_fuel_types;
@@ -162,7 +162,7 @@ class VehicalControler extends Controller
 	{
 		$model_name = $request->model_name;
 
-		$count = DB::table('tbl_model_names')->where('model_name','=',$model_name)->count();
+		$count = DB::table('tbl_model_names')->where('model_name','=',$model_name)->where('soft_delete','=',0)->count();
 		if($count == 0)
 		{
 			$tbl_model_names = new tbl_model_names;
@@ -225,6 +225,18 @@ class VehicalControler extends Controller
 		$id = $request->mod_del_id;
 		//tbl_model_names::destroy($id);
 		DB::table('tbl_model_names')->where('id','=',$id)->update(['soft_delete' => 1]);
+
+		$model_names = DB::table('tbl_model_names')->where([['soft_delete','=',0]])->get()->toArray();
+		$html = "<option value=''>Select Model Name</option>";
+		if(!empty($model_names))
+		{
+			foreach($model_names as $model_name)
+			{ 
+				$html .= '<option value="'.$model_name->model_name.'"  class="brand_of_type">'. $model_name->model_name .'</option>';
+			}
+		}
+		echo $html;
+
 	}
 
 	// Vehical save
