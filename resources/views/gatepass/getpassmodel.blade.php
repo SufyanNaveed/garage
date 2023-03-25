@@ -39,8 +39,9 @@
 		
 			<div class="row">
 				<div class="col-md-4 col-sm-4 col-xs-12">
-						<span style="float:left;" class="printimg">
-							<img src="../public/vehicle/service.png" style="width: 240px; height: 90px;">
+						<!-- <span style="float:left;" class="printimg"> -->
+						<span style="float:left;" class="">
+							<!-- <img src="../public/vehicle/service.png" style="width: 240px; height: 90px;"> -->
 							<img src="..//public/general_setting/<?php echo $setting->logo_image ?>" width="230px" height="70px" style="position: absolute; top: 10px; left: 15px;">
 						</span>
 				</div>
@@ -56,7 +57,6 @@
 			</div>
 					<div class="modal-body">
 						<table class="table table-bordered" width="100%" border="1" style="border-collapse:collapse;" >
-				
 	            			<tbody> 	
 	            				<tr>
 	            					<h3 align="center"><u>{{ trans('app.Gate Pass')}}</u></h3><br>
@@ -83,7 +83,7 @@
 	            				
 	            				<tr>
 	            					<td class="cname">{{ trans('app.Service Date:')}}</td>
-	            					<td class="cname">											{{date(getDateFormat(),strtotime($getpassdata->service_date)) }}</td>
+									<td class="cname">{{date(getDateFormat(),strtotime($getpassdata->service_date)) }}</td>
 	            				</tr>
 	            				
 								<tr>
@@ -100,17 +100,18 @@
 	            					<td class="cname">{{ trans('app.Created By:')}}</td>
 	            					<td class="cname"><?php echo getAssignTo($getpassdata->create_by); ?></td>
 	            				</tr>
-                              </tbody>
-	               			</table>
-					</div></div>
+							</tbody>
+						</table>
+					</div>
+				</div>
 
 					<div class="col-md-8 col-sm-12 col-xs-12">
-						<div class="x_panel">
+						<div class="x_panel carousel_display">
 							<div id="carousel" class="carousel slide">
 								<div class="carousel-inner">
 								</div>
 							</div>
-							<div id="thumbcarousel" >
+							<div id="thumbcarousel">
 								<div class="carousel-inner-1">
 								</div><!-- /carousel-inner -->
 							</div> <!-- /thumbcarousel -->
@@ -204,17 +205,21 @@
 $(document).ready(function()
 {  
  	var m = <?php echo $available; ?>;
+ 	var url = "<?php echo URL::to('/public/gatepass/avtar.png'); ?>";
   
-  	for(var i=0 ; i< m.length ; i++) 
-  	{
-    	$('<div class="item"><img src="'+m[i]+'"><div class="carousel-caption"></div>   </div>').appendTo('.carousel-inner');
-	 	
-	 	$('<div class="item"> <div data-target="#carousel" data-slide-to="'+i+'" class="thumb"><img src="'+m[i]+'"></div></div>').appendTo('.carousel-inner-1');
-    
-    	$('<li data-target="#carousel-example-generic" data-slide-to="'+i+'"></li>').appendTo('.carousel-indicators')
-  	}
-  
-  	$('#thumbcarousel .item').first().addClass('active');
+	for(var i=0 ; i< m.length ; i++)  {
+		$('<div class="item"><img src="'+m[i]+'"><div class="carousel-caption"></div>   </div>').appendTo('.carousel-inner');	
+		$('<div class="item"> <div data-target="#carousel" data-slide-to="'+i+'" class="thumb"><img src="'+m[i]+'"></div></div>').appendTo('.carousel-inner-1');
+		$('<li data-target="#carousel-example-generic" data-slide-to="'+i+'"></li>').appendTo('.carousel-indicators')
+	}
+	
+	if(m[0] == url){
+		// console.log(m[0]);
+		// console.log(url);
+		$('.carousel_display').hide();
+	}
+  	
+	$('#thumbcarousel .item').first().addClass('active');
   	$('.item').first().addClass('active');
   	$('.carousel-indicators > li').first().addClass('active');
   	$('#carousel-example-generic').carousel();

@@ -24,7 +24,8 @@
 			<div class="col-md-7 col-sm-7 col-xs-12">
 			
 				<h3><?php echo $logo->system_name; ?></h3>
-				<div class="col-md-6 col-sm-12 col-xs-12 printimg">
+				<!-- <div class="col-md-6 col-sm-12 col-xs-12 printimg"> -->
+				<div class="col-md-6 col-sm-12 col-xs-12">
 					<img src="{{ URL::asset('public/general_setting/'.$logo->logo_image)}}" width="200px" height="70px">
 				</div>
 				<div class="col-md-6 col-sm-12 col-xs-12 ">

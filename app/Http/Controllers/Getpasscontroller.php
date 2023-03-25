@@ -309,13 +309,6 @@ class Getpasscontroller extends Controller
 			$image_name[] = URL::to('/public/gatepass/avtar.png');
 		}
 		$available = json_encode($image_name);
-		
-		// $getpassimages = Gatepass::
-		// join('tbl_gatepasses_images','tbl_gatepasses_images.gatepass_id','=','tbl_gatepasses.id')
-		// ->select('image')
-		// ->where('gatepass_id',$getpassdata->id)->get();
-
-		//dd($getpassimages); exit;
 		$setting = Setting::first();
 						
 		$html = view('gatepass.getpassmodel')->with(compact('getpassid','getpassdata','setting','available'))->render();
