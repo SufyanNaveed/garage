@@ -815,8 +815,14 @@ class VehicalControler extends Controller
 
 	public function vehicalnumberplate(Request $request)
 	{
+
 		$id = $request->vehical_id;
-		$vehicleInfo = Vehicle::where('number_plate',$id)->first();
+		$data['vehicleInfo'] =$vehicleInfo= Vehicle::where('number_plate',$id)->first();
+		$data['all_color'] = DB::table('tbl_colors')->where('soft_delete','=',0)->get()->toArray();
+		$data['selected_color'] =DB::table('tbl_vehicle_colors')->where('vehicle_id','=',$vehicleInfo->id)->get()->toArray();
+		$data['images1']=DB::table('tbl_vehicle_images')->where('vehicle_id','=',$vehicleInfo->id)->get()->toArray();
+		$data['vehicle_description']=DB::table('tbl_vehicle_discription_records')->where('vehicle_id','=',$vehicleInfo->id)->get()->toArray();
+		echo json_encode($data);
 
 
 	}

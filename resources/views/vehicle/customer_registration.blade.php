@@ -115,7 +115,7 @@
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Model Years')}} <label class="color-danger"></label></label>
 									<div class="col-md-4 col-sm-4 col-xs-12 input-group date" id="myDatepicker2">
 										<span class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-										<input type="text"  name="modelyear" autocomplete="off"  class="form-control"/>
+										<input type="text" id="modelyear" name="modelyear" autocomplete="off"  class="form-control"/>
 									</div>
 								</div>
 							</div>
@@ -124,7 +124,7 @@
 								<div class="my-form-group">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.Fuel Type')}} <label class="color-danger">*</label></label>
 									<div class="col-md-2 col-sm-2 col-xs-12">
-										<select class="form-control select_fueltype " name="fueltype" required >
+										<select class="form-control select_fueltype" id="fueltype" name="fueltype" required >
 											<option value="">{{ trans('app.Select fuel type')}} </option>
 												@if(!empty($fuel_type))
 													@foreach($fuel_type as $fuel_types)
@@ -141,7 +141,7 @@
 								<div class="">
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">{{ trans('app.No of Grear')}} <label class="text-danger"></label></label>
 									<div class="col-md-4 col-sm-4 col-xs-12">
-										<input type="text"  name="gearno"  value="{{ old('gearno') }}" placeholder="{{ trans('app.Enter No of Gear')}}" maxlength="5" class="form-control no_of_gear">
+										<input type="text" id="gearno" name="gearno"  value="{{ old('gearno') }}" placeholder="{{ trans('app.Enter No of Gear')}}" maxlength="5" class="form-control no_of_gear">
 									</div>
 								</div>
 							</div>
@@ -190,7 +190,7 @@
 									<label class="control-label col-md-2 col-sm-2 col-xs-12" for="last-name">{{ trans('app.Date Of Manufacturing')}} <label class="text-danger"></label></label>
 									<div class="col-md-4 col-sm-4 col-xs-12 input-group date datepicker">
 										<span class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-										<input type="text"  name="dom" autocomplete="off" class="form-control" placeholder="<?php echo getDatepicker();?>" onkeypress="return false;" />
+										<input type="text" id="dom" name="dom" autocomplete="off" class="form-control" placeholder="<?php echo getDatepicker();?>" onkeypress="return false;" />
 									</div>
 								</div>
 							</div>
@@ -289,7 +289,7 @@
 													<th>{{ trans('app.Action')}}</th>
 												</tr>
 											</thead>
-											<tbody>
+											<tbody id="color_tbody">
 												<tr id="color_id_1">
 													<td>
 														<select name="color[]" class="form-control color" id="tax_1" data-id="1">
@@ -329,7 +329,7 @@
 														<th class="all">{{ trans('app.Action')}}</th>
 													</tr>
 												</thead>
-												<tbody>
+												<tbody id="tab_decription_info">
 													<tr id="row_id_1">
 														<td>
 															<textarea name="description[]" class="form-control" maxlength="100" id="tax_1" ></textarea>
@@ -2552,18 +2552,120 @@ $(document).ready(function()
 
 $('.select_number_plate').change(function()
 	{
-		alert("hello");
 		var number_plate = $(this).val();
-		var url = $(this).attr('vehicalnumberurl');
+		if(number_plate!==""){
+			var url = $(this).attr('vehicalnumberurl');
 		$.ajax({
 			type:'GET',
 			url: url,
 			data:{ vehical_id:number_plate },
 			success:function(response){
-				//$('.select_vehicaltype').html(response);
+				response=JSON.parse(response);
+				console.log(response.vehicleInfo);
+				$('.select_vehicaltype').val(response.vehicleInfo.vehicletype_id);
+				$('#sup_id').val(response.vehicleInfo.customer_id);
+				$('.chassis_no').val(response.vehicleInfo.chassisno);
+				$('#modelyear').val(response.vehicleInfo.modelyear);
+				$('#fueltype').val(response.vehicleInfo.fuel_id);
+				$('#gearno').val(response.vehicleInfo.nogears);
+				$('.model_addname').val(response.vehicleInfo.modelname);
+				$('.price_is').val(response.vehicleInfo.price);
+				$('.odometer_read').val(response.vehicleInfo.odometerreading);
+				$('.gear_box').val(response.vehicleInfo.gearbox);
+				$('.gear_box_no').val(response.vehicleInfo.gearboxno);
+				$('.engine_no').val(response.vehicleInfo.engineno);
+				$('.engine_size').val(response.vehicleInfo.enginesize);
+				$('.engine_size').val(response.vehicleInfo.enginesize);
+				$('.key_no').val(response.vehicleInfo.keyno);
+				$('.engineField').val(response.vehicleInfo.engine);
+				$('#dom').val(response.vehicleInfo.dom);
+				$('.select_vehicaltype').trigger('change');
+				if(response.selected_color.length > 0 ){
+					$('#color_tbody').empty();
+					var trHtml=getColorHtml(response.selected_color,response.all_color);
+					$('#color_tbody').append(trHtml);
+				}
+				if(response.vehicle_description.length > 0 ){
+					$('#tab_decription_info').empty();
+					var descpHtml=getDescpHtml(response.vehicle_description);
+					$('#tab_decription_info').append(descpHtml);
+				}
+				if(response.images1.length > 0 ){
+					$('#image_preview').empty();
+					var imageHtml=getImageHtml(response.images1);
+					$('#image_preview').append(imageHtml);
+				}
+
+
 			}
 		});
+		}
+
 	});
+
+	function getColorHtml(selectedColor,all_color)
+	{
+		var tableHtml='';
+		var c=1;
+		var selected="";
+		var remove_color="";
+		for (let i = 0; i < selectedColor.length; i++) {
+			if(i==0){
+				remove_color="";
+			}else{
+				remove_color='remove_color';
+			}
+			tableHtml +='<tr id="color_id_'+c+'"><td><select name="color[]" class="form-control color" id="tax_'+c+'" data-id="'+c+'"><option value="">Select Color</option>';
+					if(all_color!=""){
+						for (let b = 0; b < all_color.length; b++) {
+							if(selectedColor[i]['color']==all_color[b]['id']){
+								selected="selected";
+							}
+							tableHtml+='<option value="'+all_color[b]['id']+'" '+selected+' >'+all_color[b]['color']+'</option>';
+						}
+					}
+
+			tableHtml+='</select></td><td><span class="'+remove_color+'" style="cursor: pointer;" data-id='+c+'><i class="fa fa-trash"></i>Delete</span></td></tr>';
+		c++;
+	}
+		return tableHtml;
+	}
+
+	function getDescpHtml(selectedDescp)
+	{
+		var descpHtml='';
+		var d=1;
+		var selected="";
+		var delete_description="";
+		for (let i = 0; i < selectedDescp.length; i++) {
+			if(i==0){
+				delete_description="";
+			}else{
+				delete_description='delete_description';
+			}
+			descpHtml+='<tr id="row_id_'+d+'"><td>';
+				descpHtml+='<textarea name="description[]" class="form-control" maxlength="100" id="tax_'+d+'" >'+selectedDescp[i]['vehicle_description']+'</textarea>';
+				descpHtml+='</td><td>';
+				descpHtml+='<span class="'+delete_description+'" style="cursor: pointer;" data-id="'+d+'"><i class="fa fa-trash"></i>Delete</span></td></tr>';
+		d++;}
+		return descpHtml;
+	}
+
+	function getImageHtml(images)
+	{
+		var imageUrl='@php echo url('public/vehicle/') @endphp';
+		var imgHtml='';
+		var d=1;
+		var delete_description="";
+		for (let i = 0; i < images.length; i++) {
+
+			imgHtml+='<div class="col-md-4 col-sm-4 col-xs-12 removeimage delete_image" id="image_remove_'+images[i]['id']+'"  imgaeid="'+images[i]['id']+'" ><a href=""><img src="'+imageUrl+'/'+images[i]['image']+'"  width="100px" height="60px">';
+			imgHtml+='</a></div>';
+
+	d++;}
+		return imgHtml;
+	}
+
 </script>
 <!-- Form field validation -->
 {!! JsValidator::formRequest('App\Http\Requests\VehicleAddEditFormRequest', '#vehicleAdd-Form'); !!}
