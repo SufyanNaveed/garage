@@ -129,6 +129,7 @@ Route::group(['prefix'=>'vehicle'],function()
 	Route::get('/list/delete/{id}',['as'=>'vehical/list/delete/{id}','uses'=>'VehicalControler@destory'])->middleware('can:vehicle_delete');
 	Route::get('list/edit/{id}',['as'=>'vehical/list/edit/{id}','uses'=>'VehicalControler@editvehical'])->middleware('can:vehicle_edit');
     Route::post('list/edit/update/{id}',['as'=>'/vehical/list/edit/update/{id}','uses'=>'VehicalControler@updatevehical'])->middleware('can:vehicle_edit');
+	Route::post('/vehicle_images',['as'=>'vehicle/vehicle_images','uses'=>'VehicalControler@vehicle_images']);
 
     Route::get('/vehicaltypefrombrand','VehicalControler@vehicaltype');
 
@@ -573,6 +574,9 @@ Route::group(['prefix'=>'gatepass'],function()
 	Route::get('/gatepassview',['as'=>'/gatepass//gatepassview','uses'=>'Getpasscontroller@gatepassview'])->middleware('can:gatepass_view');
 	Route::get('/gatedata',['as'=>'/gatepass/gatedata','uses'=>'Getpasscontroller@gatedata']);
 	Route::get('delete/getImages','Getpasscontroller@deleteImages');
+
+	Route::post('/vehicle_images',['as'=>'gatepass/vehicle_images','uses'=>'Getpasscontroller@vehicle_images']);
+
 });
 
 //Observation Type  Module

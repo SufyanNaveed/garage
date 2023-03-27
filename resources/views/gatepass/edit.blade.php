@@ -1,5 +1,6 @@
  @extends('layouts.app')
 @section('content')
+<?php Session::put('post_vehicle_image',''); ?>
 
 <!-- page content starting -->	
 	<div class="right_col" role="main">
@@ -170,8 +171,10 @@
 										<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
 									</div>
 										<div class="form-group col-md-10 col-sm-12 col-xs-12">
-											<input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />
-											
+											<!--<input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />-->
+											<div class="col-md-2 col-sm-2 col-xs-12 addremove">
+												<button type="button" class="btn btn-default" data-target="#responsive-modal-images-model" data-toggle="modal"> Choose Files</button>
+											</div><br><br>
 											<div class="row" id="image_preview">
 												@if(!empty($images1))
 													@foreach($images1 as $images2)
@@ -199,6 +202,26 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Images Upload -->
+	<div class="col-md-6">
+			<div id="responsive-modal-images-model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							<h4 class="modal-title">Images Upload</h4>
+						</div>
+						<div class="modal-body">
+						<form method="post" action="{{url('/gatepass/vehicle_images')}}" enctype="multipart/form-data" class="dropzone" id="dropzoneFrom">
+							@csrf
+						</form>   
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!-- End Images Upload -->
 <!-- /page content -->
 <style>
 	.removeimage{float:left;    padding: 5px; height: 70px;}
@@ -226,6 +249,32 @@
 <script>
 $(document).ready(function()
 {
+	Dropzone.autoDiscover = false;
+    var myDropzone = new Dropzone("#dropzoneFrom", {
+        url: "upload.php", // Set the url for your upload script location
+        paramName: "file", // The name that will be used to transfer the file
+        maxFiles: 10,
+        acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+        maxFilesize: 10, // MB
+        addRemoveLinks: false,
+        accept: function(file, done) {
+            if (file.name == "wow.jpg") {
+                done("Naha, you don't.");
+            } else {
+                var html = '<div class="col-md-2">'+
+                    '<img src="upload/'+file.name+'" class="img-thumbnail" width="175" height="175" style="height:175px;" />'+
+                    '<button type="button" class="btn btn-link remove_image" id="'+file.name+'">Remove</button>'+
+                '</div>';
+                $('#preview').html(html);
+                console.log(file.name);
+                done();
+                myDropzone = this;
+                var _this = this;
+                _this.removeAllFiles();
+            }
+        }
+    });
+	
 	/*datetimepicker*/
     $('.datepicker').datetimepicker({
         format: "<?php echo getDatetimepicker(); ?>",

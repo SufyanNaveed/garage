@@ -214,8 +214,6 @@ $(document).ready(function()
 	}
 	
 	if(m[0] == url){
-		// console.log(m[0]);
-		// console.log(url);
 		$('.carousel_display').hide();
 	}
   	

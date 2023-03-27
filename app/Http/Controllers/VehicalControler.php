@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use DB;
 use URL;
 use Auth;
+use Session;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
@@ -342,24 +343,23 @@ class VehicalControler extends Controller
 		    $descriptions->vehicle_description = $desc;
 		    $descriptions->save();
 		}
-       $vehicals = DB::table('tbl_vehicles')->orderBy('id','desc')->first();
-       $id = $vehicles->id;
+       	$vehicals = DB::table('tbl_vehicles')->orderBy('id','desc')->first();
+       	$id = $vehicles->id;
 
-	   $image = $request->image;
-	   if(!empty($image))
-		{
-			$files = $image;
-
+	   	// $image = $request->image;
+	   	// if(!empty($image))
+		// {
+			$files = explode(',', session('pre_vehicle_image')); //$image;
 			foreach($files as $file)
 			{
-				$filename = $file->getClientOriginalName();
-				$file->move(public_path().'/vehicle/', $file->getClientOriginalName());
+				// $filename = $file->getClientOriginalName();
+				// $file->move(public_path().'/vehicle/', $file->getClientOriginalName());
 				$images = new tbl_vehicle_images;
 				$images->vehicle_id = $id;
-				$images->image = $filename;
+				$images->image = $file;
 				$images->save();
 			}
-		}
+		// }
 		$vehicles = DB::table('tbl_vehicles')->orderBy('id','desc')->first();
    		$id = $vehicles->id;
 
@@ -377,7 +377,18 @@ class VehicalControler extends Controller
        // return redirect('/vehicle/list')->with('message','Successfully Submitted');
         return redirect('/quotation/add/'.$id)->with('message','Successfully Submitted');
 	}
-
+	public function vehicle_images(Request $request)
+    {
+        $image = $request->file('file');
+        $imageName = $image->getClientOriginalName();
+        $image->move(public_path('vehicle'),$imageName);
+        
+		$images = Session::get('pre_vehicle_image');
+		$imageName = $images ? $imageName .','.$images : $imageName;
+        
+        Session::put('pre_vehicle_image', $imageName);
+		echo session('pre_vehicle_image'); 
+    }
 
 	// Vehical  Delete
     public function destory($id)

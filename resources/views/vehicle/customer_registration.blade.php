@@ -3,7 +3,7 @@
 <style type='text/css'>
   .ui-datepicker-calendar,.ui-datepicker-month { display: none; }​
 </style>
-
+<?php Session::put('pre_vehicle_image',''); ?>
 <!-- page content -->
 	<div class="right_col" role="main">
 		<div class="page-title">
@@ -259,18 +259,35 @@
 							<div class="form-group">
 
 							<!-- Vehical images  -->
-								<div class="col-md-6 col-sm-12 col-xs-12 form-group my-form-group">
-									<div class="col-md-12 col-sm-12 col-xs-12">
-										<h2>{{ trans('app.Vehicle Images')}} (Pre Service)</h2>
-											<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
-									</div>
-										<div class="form-group col-md-10 col-sm-12 col-xs-12">
-											<input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />
-
+									<div class="col-md-6 col-sm-12 col-xs-12 form-group  my-form-group">
+										<div class="col-md-6 col-sm-6 col-xs-6">
+											<h2>{{ trans('app.Vehicle Description')}} </h2>
 										</div>
-										<div class="row classimage" id="image_preview"></div>
-
-								</div>
+										<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom: 33px;">
+											<button type="button" id="add_new_description" class="btn btn-default newadd" url="{!! url('vehicle/add/getDescription')!!}">{{ trans('app.Add New')}}
+											</button>
+										</div>
+										<div class="form-group col-md-12 col-sm-12 col-xs-12">
+											<table class="table table-bordered addtaxtype"  id="tab_decription_detail" align="center">
+												<thead>
+													<tr>
+														<th class="all">{{ trans('app.Description')}}</th>
+														<th class="all">{{ trans('app.Action')}}</th>
+													</tr>
+												</thead>
+												<tbody id="tab_decription_info">
+													<tr id="row_id_1">
+														<td>
+															<textarea name="description[]" class="form-control" maxlength="100" id="tax_1" ></textarea>
+														</td>
+														<td>
+															<span class="" data-id="1"><i class="fa fa-trash"></i> {{ trans('app.Delete')}}</span>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
 
 						<!--vehicle color-->
 								<div class="col-md-6 col-sm-12 col-xs-12 form-group ">
@@ -313,35 +330,21 @@
 							<div class="form-group">
 
 							<!-- Vehicle Description  -->
-									<div class="col-md-6 col-sm-12 col-xs-12 form-group">
-										<div class="col-md-6 col-sm-6 col-xs-6">
-											<h2>{{ trans('app.Vehicle Description')}} </h2>
-										</div>
-										<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom: 33px;">
-											<button type="button" id="add_new_description" class="btn btn-default newadd" url="{!! url('vehicle/add/getDescription')!!}">{{ trans('app.Add New')}}
-											</button>
-										</div>
-										<div class="form-group col-md-12 col-sm-12 col-xs-12">
-											<table class="table table-bordered addtaxtype"  id="tab_decription_detail" align="center">
-												<thead>
-													<tr>
-														<th class="all">{{ trans('app.Description')}}</th>
-														<th class="all">{{ trans('app.Action')}}</th>
-													</tr>
-												</thead>
-												<tbody id="tab_decription_info">
-													<tr id="row_id_1">
-														<td>
-															<textarea name="description[]" class="form-control" maxlength="100" id="tax_1" ></textarea>
-														</td>
-														<td>
-															<span class="" data-id="1"><i class="fa fa-trash"></i> {{ trans('app.Delete')}}</span>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
+							<div class="col-md-6 col-sm-12 col-xs-12 form-group">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<h2>{{ trans('app.Vehicle Images')}} (Pre Service)</h2>
+											<span> <h5 style="margin-left: 10px;"> {{ trans('app.Select Multiple Images')}} </h5> </span>
 									</div>
+										<div class="form-group col-md-10 col-sm-12 col-xs-12">
+											<!-- <input type="file"  name="image[]"  class="form-control imageclass" id="images" onchange="preview_images();"  data-max-file-size="5M" multiple />-->
+											<div class="col-md-2 col-sm-2 col-xs-12 addremove">
+												<button type="button" class="btn btn-default" data-target="#responsive-modal-images-model" data-toggle="modal"> Choose Files</button>
+											</div>
+										</div>
+										<div class="row classimage" id="image_preview"></div>
+
+								</div>							
+									
 							</div>
 
 					<!-- Start Custom Field, (If register in Custom Field Module)  -->
@@ -602,6 +605,26 @@
 					</div>
 				<!-- end Fuel Type -->
 
+				<!-- Images Upload -->
+					<div class="col-md-6">
+						<div id="responsive-modal-images-model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+										<h4 class="modal-title">Images Upload</h4>
+									</div>
+									<div class="modal-body">
+									<form method="post" action="{{url('/vehicle/vehicle_images')}}" enctype="multipart/form-data" class="dropzone" id="dropzoneFrom">
+										@csrf
+									</form>   
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<!-- End Images Upload -->
+				
 				<!-- Model Name -->
 					<div class="col-md-6">
 						<div id="responsive-modal-vehi-model" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -882,13 +905,39 @@
 <script>
 $(document).ready(function()
 {
-    $('#myDatepicker2').datetimepicker({
+ 	
+	Dropzone.autoDiscover = false;
+    var myDropzone = new Dropzone("#dropzoneFrom", {
+        url: "upload.php", // Set the url for your upload script location
+        paramName: "file", // The name that will be used to transfer the file
+        maxFiles: 10,
+        acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+        maxFilesize: 10, // MB
+        addRemoveLinks: false,
+        accept: function(file, done) {
+            if (file.name == "wow.jpg") {
+                done("Naha, you don't.");
+            } else {
+                var html = '<div class="col-md-2">'+
+                    '<img src="upload/'+file.name+'" class="img-thumbnail" width="175" height="175" style="height:175px;" />'+
+                    '<button type="button" class="btn btn-link remove_image" id="'+file.name+'">Remove</button>'+
+                '</div>';
+                $('#preview').html(html);
+                console.log(file.name);
+                done();
+                myDropzone = this;
+                var _this = this;
+                _this.removeAllFiles();
+            }
+        }
+    });
+	
+	$('#myDatepicker2').datetimepicker({
        format: "yyyy",
 		autoclose: 2,
 		minView: 4,
 		startView: 4,
     });
-
 
     var msg14= "{{ trans('app.Please enter only alphanumeric data')}}";
 	var msg15 = "{{ trans('app.Only blank space not allowed')}}";

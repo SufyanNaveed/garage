@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use DB;
 use URL;
 use Auth;
+use Session;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
@@ -266,23 +267,36 @@ class Getpasscontroller extends Controller
 		$gatepass->save();
 
 
-		$image = $request->image;
-		if(!empty($image))
-		{
-			$files = $image;
+		// $image = $request->image;
+		// if(!empty($image))
+		// {
+			$files = explode(',', session('pre_vehicle_image')); //$image;
 
 			foreach($files as $file)
 			{
-				$filename = $file->getClientOriginalName();
-				$file->move(public_path().'/gatepass/', $file->getClientOriginalName());
+				// $filename = $file->getClientOriginalName();
+				// $file->move(public_path().'/gatepass/', $file->getClientOriginalName());
 				$images = new tbl_gatepasses_images;
 				$images->gatepass_id = $id;
-				$images->image = $filename;
+				$images->image = $file;
 				$images->save();
 			}
-		}
+		// }
 		return redirect('/gatepass/list')->with('message','Successfully Updated');
 	}
+	
+	public function vehicle_images(Request $request)
+    {
+        $image = $request->file('file');
+        $imageName = $image->getClientOriginalName();
+        $image->move(public_path('gatepass'),$imageName);
+        
+		$images = Session::get('post_vehicle_image');
+		$imageName = $images ? $imageName .','.$images : $imageName;
+        
+        Session::put('post_vehicle_image', $imageName);
+		echo session('post_vehicle_image'); 
+    }
 	
 	//gatepass modal 
 	public function gatepassview(Request $request)
