@@ -270,7 +270,7 @@ class Getpasscontroller extends Controller
 		// $image = $request->image;
 		// if(!empty($image))
 		// {
-			$files = explode(',', session('pre_vehicle_image')); //$image;
+			$files = explode(',', session('post_vehicle_image')); //$image;
 
 			foreach($files as $file)
 			{
