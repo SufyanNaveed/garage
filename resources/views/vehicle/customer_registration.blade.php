@@ -905,32 +905,6 @@
 <script>
 $(document).ready(function()
 {
- 	
-	Dropzone.autoDiscover = false;
-    var myDropzone = new Dropzone("#dropzoneFrom", {
-        url: "upload.php", // Set the url for your upload script location
-        paramName: "file", // The name that will be used to transfer the file
-        maxFiles: 10,
-        acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
-        maxFilesize: 10, // MB
-        addRemoveLinks: false,
-        accept: function(file, done) {
-            if (file.name == "wow.jpg") {
-                done("Naha, you don't.");
-            } else {
-                var html = '<div class="col-md-2">'+
-                    '<img src="upload/'+file.name+'" class="img-thumbnail" width="175" height="175" style="height:175px;" />'+
-                    '<button type="button" class="btn btn-link remove_image" id="'+file.name+'">Remove</button>'+
-                '</div>';
-                $('#preview').html(html);
-                console.log(file.name);
-                done();
-                myDropzone = this;
-                var _this = this;
-                _this.removeAllFiles();
-            }
-        }
-    });
 	
 	$('#myDatepicker2').datetimepicker({
        format: "yyyy",
